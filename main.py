@@ -110,11 +110,9 @@ class BluePulsePiWidget(QWidget):
         super(BluePulsePiWidget, self).__init__()
 
         self.widgets = {}
-        self.spacer = QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding)
 
         # set up layout
         self.layout = QVBoxLayout()
-        self.layout.addSpacerItem(self.spacer)
         self.setLayout(self.layout)
 
         # set up timer
@@ -152,7 +150,6 @@ class BluePulsePiWidget(QWidget):
 
             self.widgets[d] = b
 
-        self.layout.removeItem(self.spacer)
         remove_list = []
         for d, w in self.widgets.items():
             if d in devices:
@@ -165,7 +162,6 @@ class BluePulsePiWidget(QWidget):
                 remove_list.append(d)
         for d in remove_list:
             self.widgets.pop(d)
-        self.layout.addSpacerItem(self.spacer)
 
 
 class MainWidget(QWidget):
@@ -189,15 +185,20 @@ class MainWidget(QWidget):
                     )
                 ))
 
-        # only for BluePulsePi
-        if os.path.exists("/home/pi/BluePulsePi"):
-            self.widgets.append(BluePulsePiWidget())
-
         # set up layout
         l = QHBoxLayout()
         for w in self.widgets:
             l.addWidget(w)
-        self.setLayout(l)
+
+        l2 = QVBoxLayout()
+        l2.addLayout(l)
+        l2.addSpacerItem(QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding))
+
+        # only for BluePulsePi
+        if os.path.exists("/home/pi/BluePulsePi"):
+            l2.addWidget(BluePulsePiWidget())
+
+        self.setLayout(l2)
 
         self.show()
 
