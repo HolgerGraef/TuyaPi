@@ -9,7 +9,7 @@ git clone https://github.com/HolgerGraef/TuyaPi.git
 cd TuyaPi
 python3 -m venv --system-site-packages venv
 . venv/bin/activate
-pip install tinytuya
+pip install tinytuya qtawesome
 ```
 
 ### /boot/config.txt
@@ -79,3 +79,4 @@ python -m tinytuya wizard
 - https://pypi.org/project/tinytuya/
 - https://github.com/codetheweb/tuyapi
 - https://www.cnx-software.com/2021/12/13/blink-an-led-on-esp32-board-with-tuya-link-sdk/
+- https://github.com/spyder-ide/qtawesome#supported-fonts

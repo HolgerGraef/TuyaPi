@@ -1,11 +1,14 @@
 import json
+import os
 import signal
 import tinytuya
 
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+from glob import glob
 
+from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtWidgets import (
     QApplication,
+    QLabel,
     QHBoxLayout,
     QVBoxLayout,
     QPushButton,
@@ -13,6 +16,10 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
     QWidget,
 )
+
+import qtawesome as qta
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class BulbWidget(QWidget):
@@ -98,11 +105,73 @@ class BulbWidget(QWidget):
             self.b_toggle.setStyleSheet("QPushButton { background-color: #FF0000; }")
 
 
-class ControlWidget(QWidget):
+class BluePulsePiWidget(QWidget):
     def __init__(self):
-        super(ControlWidget, self).__init__()
+        super(BluePulsePiWidget, self).__init__()
 
-        self.setWindowTitle("Control Widget")
+        self.widgets = {}
+        self.spacer = QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding)
+
+        # set up layout
+        self.layout = QVBoxLayout()
+        self.layout.addSpacerItem(self.spacer)
+        self.setLayout(self.layout)
+
+        # set up timer
+        self.refresh_timer = QTimer()
+        self.refresh_timer.setInterval(1000)
+        self.refresh_timer.timeout.connect(self.refresh)
+        self.refresh_timer.start()
+
+        self.refresh()
+
+    def refresh(self):
+        devices = glob("/var/bluetooth-handler-input*")
+        devices = [open(d, "r").read() for d in devices]
+        icon = qta.icon("fa5b.bluetooth")
+        for d in devices:
+            # skip devices that have already been processed
+            if d in self.widgets:
+                continue
+
+            # credit: https://stackoverflow.com/a/61130602
+            b = QPushButton()
+            b.setIcon(icon)
+            b.setIconSize(QSize(64, 64))
+            # align the icon left
+            b.setStyleSheet("text-align: left;")
+            b.setLayout(QHBoxLayout())
+
+            l = QLabel(d)
+            l.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+            l.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+            # TODO: find better way to show all text
+            l.setStyleSheet("margin-top: 100px; margin-bottom: 100px;")
+
+            b.layout().addWidget(l)
+
+            self.widgets[d] = b
+
+        self.layout.removeItem(self.spacer)
+        remove_list = []
+        for d, w in self.widgets.items():
+            if d in devices:
+                # new device?
+                if self.layout.indexOf(w) < 0:
+                    self.layout.addWidget(w)
+            else:
+                # device is no longer present
+                self.layout.removeWidget(w)
+                remove_list.append(d)
+        for d in remove_list:
+            self.widgets.pop(d)
+        self.layout.addSpacerItem(self.spacer)
+
+
+class MainWidget(QWidget):
+    def __init__(self):
+        super(MainWidget, self).__init__()
+
         self.setGeometry(0, 0, 1920, 1080)
 
         self.setStyleSheet("QWidget { font-size: 42pt; padding: 50px; }")
@@ -120,6 +189,10 @@ class ControlWidget(QWidget):
                     )
                 ))
 
+        # only for BluePulsePi
+        if os.path.exists("/home/pi/BluePulsePi"):
+            self.widgets.append(BluePulsePiWidget())
+
         # set up layout
         l = QHBoxLayout()
         for w in self.widgets:
@@ -132,6 +205,6 @@ class ControlWidget(QWidget):
 if __name__ == "__main__":
     app = QApplication([])
 
-    w = ControlWidget()
+    w = MainWidget()
 
     app.exec_()
