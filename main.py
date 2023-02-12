@@ -3,6 +3,7 @@ import os
 import signal
 import tinytuya
 
+from functools import partial
 from glob import glob
 
 from PyQt5.QtCore import Qt, QSize, QTimer
@@ -23,7 +24,7 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class BulbWidget(QWidget):
-    def __init__(self, label, device):
+    def __init__(self, label: str, device: tinytuya.BulbDevice, presets: dict):
         super(BulbWidget, self).__init__()
 
         self.device = device
@@ -31,24 +32,23 @@ class BulbWidget(QWidget):
         print("Status of {}: {}".format(label, self.device.status()))
         print("Sate of {}: {}".format(label, self.device.state()))
 
+        self.presets = presets
+
         self.b_toggle = QPushButton(label)
         self.update_toggle_button()
-
-        self.b_bright = QPushButton("Bright")
-        self.b_comfy = QPushButton("Comfy")
+        self.b_toggle.clicked.connect(self.toggle)
 
         # set up layout
         l = QVBoxLayout()
         l.addWidget(self.b_toggle)
-        l.addWidget(self.b_bright)
-        l.addWidget(self.b_comfy)
+
+        for p in self.presets:
+            w = QPushButton(p["label"])
+            l.addWidget(w)
+            w.clicked.connect(partial(self.handle_preset, p))
+
         l.addSpacerItem(QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding))
         self.setLayout(l)
-
-        # make connections
-        self.b_toggle.clicked.connect(self.toggle)
-        self.b_bright.clicked.connect(self.set_bright)
-        self.b_comfy.clicked.connect(self.set_comfy)
 
     def toggle(self):
         if self.device.state()["is_on"]:
@@ -57,35 +57,19 @@ class BulbWidget(QWidget):
             self.device.turn_on()
         self.update_toggle_button()
 
-    def set_bright(self):
+    def handle_preset(self, preset):
         try:
             # make sure bulb is on
             self.device.turn_on()
 
-            if isinstance(self.device.state()["mode"], int):
-                self.device.set_mode(255)
-                self.device.set_brightness(255)
-            else:
+            if preset["mode"] == "white":
                 self.device.set_mode("white")
-                self.device.set_white_percentage(100, 100)
-        except Exception as e:
-            print("Failed to set brightness: {}".format(e))
-
-        self.update_toggle_button()
-
-    def set_comfy(self):
-        try:
-            # make sure bulb is on
-            self.device.turn_on()
-
-            if isinstance(self.device.state()["mode"], int):
-                # this is actually the brightness (10%) on my lightbulb
-                self.device.set_mode(48)
-                # this is actually the color temperature on my lightbulb
-                self.device.set_brightness(0)
-            else:
-                self.device.set_mode("white")
-                self.device.set_white_percentage(0, 10)
+                self.device.set_white_percentage(
+                    preset["brightness"], preset["colourtemp"]
+                )
+            elif preset["mode"] == "dps":
+                for k, v in preset["dps"].items():
+                    self.device.set_value(k, v)
         except Exception as e:
             print("Failed to set brightness: {}".format(e))
 
@@ -172,18 +156,28 @@ class MainWidget(QWidget):
 
         self.setStyleSheet("QWidget { font-size: 42pt; padding: 50px; }")
 
+        presets = json.load(open("presets.json", "r"))
+
         devices = json.load(open("tinytuya/devices.json", "r"))
         self.widgets = []
         for d in devices:
+            if d["id"] in presets:
+                p = presets[d["id"]]
+            else:
+                p = presets["default"]
+
             if d["category"] == "dj":  # light bulb
-                self.widgets.append(BulbWidget(
-                    d["name"],
-                    tinytuya.BulbDevice(
-                        d["id"],
-                        d["ip"],
-                        d["key"],
+                self.widgets.append(
+                    BulbWidget(
+                        d["name"],
+                        tinytuya.BulbDevice(
+                            d["id"],
+                            d["ip"],
+                            d["key"],
+                        ),
+                        p,
                     )
-                ))
+                )
 
         # set up layout
         l = QHBoxLayout()

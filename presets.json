@@ -1,0 +1,34 @@
+{
+    "default": [
+        {
+            "label": "Bright",
+            "mode": "white",
+            "brightness": 100,
+            "colourtemp": 100
+        },
+        {
+            "label": "Comfy",
+            "mode": "white",
+            "brightness": 10,
+            "colourtemp": 0
+        }
+    ],
+    "5758103810521cd69a34": [
+        {
+            "label": "Bright",
+            "mode": "dps",
+            "dps": {
+                "2": 255,
+                "3": 255
+            }
+        },
+        {
+            "label": "Comfy",
+            "mode": "dps",
+            "dps": {
+                "2": 48,
+                "3": 0
+            }
+        }
+    ]
+}
