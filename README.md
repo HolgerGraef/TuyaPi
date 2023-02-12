@@ -20,7 +20,7 @@ hdmi_timings=1080 1 26 4 36 1920 1 8 4 16 0 0 0 60 0 138000000 3
 hdmi_group=2
 hdmi_mode=87
 hdmi_force_mode=1
-display_hdmi_rotate=1
+display_hdmi_rotate=3
 max_framebuffer_width=1080
 max_framebuffer_height=1920
 
@@ -39,7 +39,7 @@ Section "InputClass"
         MatchIsTouchscreen "on"
         MatchDevicePath "/dev/input/event*"
         Driver "libinput"
-        Option "TransformationMatrix" "0 1 0 -1 0 1 0 0 1"
+        Option "TransformationMatrix" "0 -1 1 1 0 0 0 0 1"
 EndSection
 ...
 ```
@@ -56,6 +56,27 @@ sudo DISPLAY=:0 xhost +
 
 ```sh
 DISPLAY=:0 python main.py
+```
+
+## For autostart
+
+Set up automatic login. For instructions, see:
+https://github.com/HolgerGraef/BluePulsePi#set-up-auto-login-so-that-pulseaudio-starts
+
+Add these lines at the end of `/home/pi/.profile`:
+
+```sh
+if ! DISPLAY=:0 timeout 1s xset q &>/dev/null; then
+  startx
+else
+  echo "X is already running :-)"
+fi
+```
+
+Create `/home/pi/.xinitrc` and add the following line in the file:
+
+```sh
+cd /home/pi/TuyaPi && . venv/bin/activate && DISPLAY=:0 python main.py
 ```
 
 ## TinyTuya setup
