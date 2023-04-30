@@ -4,6 +4,8 @@ from functools import partial
 
 from PyQt5.QtWidgets import QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
+from . import IconButton
+
 
 class BulbWidget(QWidget):
     def __init__(self, label: str, device: tinytuya.BulbDevice, presets: dict):
@@ -16,7 +18,7 @@ class BulbWidget(QWidget):
 
         self.presets = presets
 
-        self.b_toggle = QPushButton(label)
+        self.b_toggle = IconButton("mdi6.lightbulb-off-outline", label)
         self.update_toggle_button()
         self.b_toggle.clicked.connect(self.toggle)
 
@@ -66,6 +68,6 @@ class BulbWidget(QWidget):
             return
 
         if is_on:
-            self.b_toggle.setStyleSheet("QPushButton { background-color: #00FF00; }")
+            self.b_toggle.setIcon("mdi6.lightbulb-on")
         else:
-            self.b_toggle.setStyleSheet("QPushButton { background-color: #FF0000; }")
+            self.b_toggle.setIcon("mdi6.lightbulb-off")
