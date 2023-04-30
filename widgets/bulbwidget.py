@@ -18,7 +18,7 @@ class BulbWorker(QThread):
         super(BulbWorker, self).__init__()
 
         self.action = None
-        self.bulb_state = {}
+        self.bulb_state = BulbState(state={}, status={})
         self.device_desc = device
         self.cond = QWaitCondition()
         self.mut = QMutex()
@@ -50,6 +50,12 @@ class BulbWorker(QThread):
     def isOn(self) -> bool:
         return "is_on" in self.bulb_state.state and self.bulb_state.state["is_on"]
 
+    def toggle(self):
+        if self.isOn():
+            self.turnOff()
+        else:
+            self.turnOn()
+
     def turnOn(self):
         self.action = self.device.turn_on
         self.cond.wakeAll()
@@ -64,12 +70,13 @@ class BulbWidget(QWidget):
         super(BulbWidget, self).__init__()
 
         self.worker = BulbWorker(device)
+        self.worker.stateChanged.connect(self.update_toggle_button)
 
         self.presets = presets
 
         self.b_toggle = IconButton("mdi6.lightbulb-off-outline", device["name"])
         self.update_toggle_button()
-        self.b_toggle.clicked.connect(self.toggle)
+        self.b_toggle.clicked.connect(self.worker.toggle)
 
         # set up layout
         l = QVBoxLayout()
@@ -82,13 +89,6 @@ class BulbWidget(QWidget):
 
         l.addSpacerItem(QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding))
         self.setLayout(l)
-
-    def toggle(self):
-        if self.worker.isOn():
-            self.worker.turnOff()
-        else:
-            self.worker.turnOn()
-        self.update_toggle_button()
 
     def handle_preset(self, preset):
         try:
@@ -106,16 +106,8 @@ class BulbWidget(QWidget):
         except Exception as e:
             print("Failed to set brightness: {}".format(e))
 
-        self.update_toggle_button()
-
     def update_toggle_button(self):
-        try:
-            is_on = self.worker.isOn()
-        except Exception as e:
-            print("Failed to get device state: {}".format(e))
-            return
-
-        if is_on:
+        if self.worker.isOn():
             self.b_toggle.setIcon("mdi6.lightbulb-on")
         else:
             self.b_toggle.setIcon("mdi6.lightbulb-off")
