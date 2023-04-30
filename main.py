@@ -3,7 +3,7 @@ import os
 import signal
 
 from datetime import datetime
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PyQt5.QtCore import Qt, QEvent, QObject, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
     QApplication,
     QLabel,
@@ -96,10 +96,21 @@ class MainWidget(QWidget):
         self.overlay.hidden.connect(self.overlayTimer.start)
         self.overlayTimer.start()
 
+        self.installEventFilter(self)
+        children = self.children()
+        while children:
+            c = children.pop(0)
+            c.installEventFilter(self)
+            children.extend(c.children())
+
         self.show()
 
-    def mousePressEvent(self, event):
-        self.overlayTimer.start()
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
+        if event.type() == QEvent.MouseButtonPress:
+            self.overlayTimer.start()
+            return False
+        else:
+            return super(MainWidget, self).eventFilter(obj, event)
 
     def overlayTimeout(self):
         self.overlay.setParent(self)
