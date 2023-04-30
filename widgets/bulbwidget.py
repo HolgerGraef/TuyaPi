@@ -1,30 +1,54 @@
 import tinytuya
 
+from collections import namedtuple
 from functools import partial
 
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from . import IconButton
+
+BulbState = namedtuple("BulbState", ["state", "status"])
+
+
+class BulbWorker(QThread):
+    stateChanged = pyqtSignal(BulbState)
+
+    def __init__(self, device: dict):
+        super(BulbWorker, self).__init__()
+
+        self.bulb_state = None
+        self.device_desc = device
+        self.start()
+    
+    def run(self):
+        self.device = tinytuya.BulbDevice(
+            self.device_desc["id"],
+            self.device_desc["ip"],
+            self.device_desc["key"],
+        )
+        self.device.set_version(3.3)
+
+        while True:
+            bulb_state = BulbState(state=self.device.state(), status=self.device.status())
+            if bulb_state != self.bulb_state:
+                self.bulb_state = bulb_state
+                self.stateChanged.emit(bulb_state)
+
+                print("Status of {}: {}".format(self.device_desc["name"], bulb_state.status))
+                print("State of {}: {}".format(self.device_desc["name"], bulb_state.state))
+            self.sleep(1)
 
 
 class BulbWidget(QWidget):
     def __init__(self, device: dict, presets: dict):
         super(BulbWidget, self).__init__()
 
-        label = device["name"]
-
-        self.device = tinytuya.BulbDevice(
-            device["id"],
-            device["ip"],
-            device["key"],
-        )
-        self.device.set_version(3.3)
-        print("Status of {}: {}".format(label, self.device.status()))
-        print("Sate of {}: {}".format(label, self.device.state()))
+        self.worker = BulbWorker(device)
 
         self.presets = presets
 
-        self.b_toggle = IconButton("mdi6.lightbulb-off-outline", label)
+        self.b_toggle = IconButton("mdi6.lightbulb-off-outline", device["name"])
         self.update_toggle_button()
         self.b_toggle.clicked.connect(self.toggle)
 
