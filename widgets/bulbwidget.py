@@ -13,42 +13,61 @@ BulbState = namedtuple("BulbState", ["state", "status"])
 
 class BulbWorker(QThread):
     stateChanged = pyqtSignal(BulbState)
+    actionDone = pyqtSignal()
 
     def __init__(self, device: dict):
         super(BulbWorker, self).__init__()
 
-        self.action = None
-        self.bulb_state = BulbState(state={}, status={})
-        self.device_desc = device
-        self.cond = QWaitCondition()
-        self.mut = QMutex()
+        self._device_desc = device
+        self._action_queue = []
+        self._bulb_state = BulbState(state={}, status={})
+
+        self._cond = QWaitCondition()
+        self._mut = QMutex()
+
         self.start()
     
     def run(self):
-        self.device = tinytuya.BulbDevice(
-            self.device_desc["id"],
-            self.device_desc["ip"],
-            self.device_desc["key"],
+        self._device = tinytuya.BulbDevice(
+            self._device_desc["id"],
+            self._device_desc["ip"],
+            self._device_desc["key"],
         )
-        self.device.set_version(3.3)
+        self._device.set_version(3.3)
 
         while True:
-            bulb_state = BulbState(state=self.device.state(), status=self.device.status())
-            if bulb_state != self.bulb_state:
-                self.bulb_state = bulb_state
+            bulb_state = BulbState(state=self._device.state(), status=self._device.status())
+            if bulb_state != self._bulb_state:
+                self._bulb_state = bulb_state
                 self.stateChanged.emit(bulb_state)
 
-                print("Status of {}: {}".format(self.device_desc["name"], bulb_state.status))
-                print("State of {}: {}".format(self.device_desc["name"], bulb_state.state))
+                print("Status of {}: {}".format(self._device_desc["name"], bulb_state.status))
+                print("State of {}: {}".format(self._device_desc["name"], bulb_state.state))
             
-            self.cond.wait(self.mut, 1000)
+            self._cond.wait(self._mut, 1000)
 
-            if self.action is not None:
-                self.action()
-                self.action = None
+            while self._action_queue:
+                action = self._action_queue.pop(0)
+                action()
+                self.actionDone.emit()
 
     def isOn(self) -> bool:
-        return "is_on" in self.bulb_state.state and self.bulb_state.state["is_on"]
+        return "is_on" in self._bulb_state.state and self._bulb_state.state["is_on"]
+
+    def queueAction(self, fun):
+        self._action_queue.append(fun)
+        self._cond.wakeAll()
+
+    def setPreset(self, preset: dict):
+        self.turnOn()
+        if preset["mode"] == "white":
+            self.queueAction(lambda: self._device.set_mode("white"))
+            self.queueAction(lambda: self._device.set_white_percentage(
+                preset["brightness"], preset["colourtemp"]
+            ))
+        elif preset["mode"] == "dps":
+            for k, v in preset["dps"].items():
+                self.queueAction(lambda: self._device.set_value(k, v))
 
     def toggle(self):
         if self.isOn():
@@ -57,12 +76,10 @@ class BulbWorker(QThread):
             self.turnOn()
 
     def turnOn(self):
-        self.action = self.device.turn_on
-        self.cond.wakeAll()
+        self.queueAction(self._device.turn_on)
 
     def turnOff(self):
-        self.action = self.device.turn_off
-        self.cond.wakeAll()
+        self.queueAction(self._device.turn_off)
 
 
 class BulbWidget(QWidget):
@@ -70,12 +87,13 @@ class BulbWidget(QWidget):
         super(BulbWidget, self).__init__()
 
         self.worker = BulbWorker(device)
-        self.worker.stateChanged.connect(self.update_toggle_button)
+        self.worker.stateChanged.connect(self.updateButtons)
+        self.worker.actionDone.connect(self.updateButtons)
 
         self.presets = presets
+        self.button_backup = (None, None)
 
         self.b_toggle = IconButton("mdi6.lightbulb-off-outline", device["name"])
-        self.update_toggle_button()
         self.b_toggle.clicked.connect(self.toggle)
 
         # set up layout
@@ -83,36 +101,35 @@ class BulbWidget(QWidget):
         l.addWidget(self.b_toggle)
 
         for p in self.presets:
-            w = QPushButton(p["label"])
+            w = IconButton(None, p["label"])
             l.addWidget(w)
-            w.clicked.connect(partial(self.handle_preset, p))
+            w.clicked.connect(partial(self.setPreset, w, p))
 
         l.addSpacerItem(QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding))
         self.setLayout(l)
 
+        self.updateButtons()
+
+    def setButtonsEnabled(self, b: bool=True):
+        self.setEnabled(b)
+        if b and self.button_backup[0] and self.button_backup[1]:
+            self.button_backup[0].setIcon(self.button_backup[1])
+
+    def setButtonWaiting(self, button: IconButton):
+        self.setButtonsEnabled(False)
+        self.button_backup = (button, button.icon())
+        button.setIcon("fa5s.spinner")
+
     def toggle(self):
-        self.b_toggle.setEnabled(False)
-        self.b_toggle.setIcon("fa5s.spinner")
+        self.setButtonWaiting(self.b_toggle)
         self.worker.toggle()
 
-    def handle_preset(self, preset):
-        try:
-            # make sure bulb is on
-            self.worker.turnOn()
+    def setPreset(self, button: IconButton, preset: dict):
+        self.setButtonWaiting(button)
+        self.worker.setPreset(preset)
 
-            if preset["mode"] == "white":
-                self.device.set_mode("white")
-                self.device.set_white_percentage(
-                    preset["brightness"], preset["colourtemp"]
-                )
-            elif preset["mode"] == "dps":
-                for k, v in preset["dps"].items():
-                    self.device.set_value(k, v)
-        except Exception as e:
-            print("Failed to set brightness: {}".format(e))
-
-    def update_toggle_button(self):
-        self.b_toggle.setEnabled(True)
+    def updateButtons(self):
+        self.setButtonsEnabled()
         if self.worker.isOn():
             self.b_toggle.setIcon("mdi6.lightbulb-on")
         else:

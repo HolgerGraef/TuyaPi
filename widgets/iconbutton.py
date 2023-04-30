@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton
 
 
 class IconButton(QPushButton):
-    def __init__(self, icon: Union[str, QIcon], text: str):
+    def __init__(self, icon: Union[str, QIcon, None], text: str):
         super(IconButton, self).__init__()
 
         # credit: https://stackoverflow.com/a/61130602
@@ -26,7 +26,9 @@ class IconButton(QPushButton):
 
         self.layout().addWidget(self.label)
 
-    def setIcon(self, icon: Union[str, QIcon]):
+    def setIcon(self, icon: Union[str, QIcon, None]):
+        if icon is None:
+            return
         if isinstance(icon, str):
             icon = qta.icon(icon)
 
