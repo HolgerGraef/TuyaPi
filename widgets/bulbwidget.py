@@ -76,7 +76,7 @@ class BulbWidget(QWidget):
 
         self.b_toggle = IconButton("mdi6.lightbulb-off-outline", device["name"])
         self.update_toggle_button()
-        self.b_toggle.clicked.connect(self.worker.toggle)
+        self.b_toggle.clicked.connect(self.toggle)
 
         # set up layout
         l = QVBoxLayout()
@@ -89,6 +89,11 @@ class BulbWidget(QWidget):
 
         l.addSpacerItem(QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding))
         self.setLayout(l)
+
+    def toggle(self):
+        self.b_toggle.setEnabled(False)
+        self.b_toggle.setIcon("fa5s.spinner")
+        self.worker.toggle()
 
     def handle_preset(self, preset):
         try:
@@ -107,6 +112,7 @@ class BulbWidget(QWidget):
             print("Failed to set brightness: {}".format(e))
 
     def update_toggle_button(self):
+        self.b_toggle.setEnabled(True)
         if self.worker.isOn():
             self.b_toggle.setIcon("mdi6.lightbulb-on")
         else:
