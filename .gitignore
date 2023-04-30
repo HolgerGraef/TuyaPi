@@ -1,3 +1,4 @@
 .vscode/
 tinytuya/
 venv/
+__pycache__/
