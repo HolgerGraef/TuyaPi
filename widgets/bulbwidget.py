@@ -3,7 +3,7 @@ import tinytuya
 from collections import namedtuple
 from functools import partial
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from . import IconButton
@@ -17,8 +17,11 @@ class BulbWorker(QThread):
     def __init__(self, device: dict):
         super(BulbWorker, self).__init__()
 
-        self.bulb_state = None
+        self.action = None
+        self.bulb_state = {}
         self.device_desc = device
+        self.cond = QWaitCondition()
+        self.mut = QMutex()
         self.start()
     
     def run(self):
@@ -37,7 +40,23 @@ class BulbWorker(QThread):
 
                 print("Status of {}: {}".format(self.device_desc["name"], bulb_state.status))
                 print("State of {}: {}".format(self.device_desc["name"], bulb_state.state))
-            self.sleep(1)
+            
+            self.cond.wait(self.mut, 1000)
+
+            if self.action is not None:
+                self.action()
+                self.action = None
+
+    def isOn(self) -> bool:
+        return "is_on" in self.bulb_state.state and self.bulb_state.state["is_on"]
+
+    def turnOn(self):
+        self.action = self.device.turn_on
+        self.cond.wakeAll()
+
+    def turnOff(self):
+        self.action = self.device.turn_off
+        self.cond.wakeAll()
 
 
 class BulbWidget(QWidget):
@@ -65,16 +84,16 @@ class BulbWidget(QWidget):
         self.setLayout(l)
 
     def toggle(self):
-        if self.device.state()["is_on"]:
-            self.device.turn_off()
+        if self.worker.isOn():
+            self.worker.turnOff()
         else:
-            self.device.turn_on()
+            self.worker.turnOn()
         self.update_toggle_button()
 
     def handle_preset(self, preset):
         try:
             # make sure bulb is on
-            self.device.turn_on()
+            self.worker.turnOn()
 
             if preset["mode"] == "white":
                 self.device.set_mode("white")
@@ -91,8 +110,7 @@ class BulbWidget(QWidget):
 
     def update_toggle_button(self):
         try:
-            state = self.device.state()
-            is_on = state["is_on"]
+            is_on = self.worker.isOn()
         except Exception as e:
             print("Failed to get device state: {}".format(e))
             return
