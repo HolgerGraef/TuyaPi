@@ -1,8 +1,6 @@
 import json
 import os
 import signal
-from PyQt5 import QtGui
-import tinytuya
 
 from datetime import datetime
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
@@ -67,17 +65,7 @@ class MainWidget(QWidget):
                 p = presets["default"]
 
             if d["category"] == "dj":  # light bulb
-                self.widgets.append(
-                    BulbWidget(
-                        d["name"],
-                        tinytuya.BulbDevice(
-                            d["id"],
-                            d["ip"],
-                            d["key"],
-                        ),
-                        p,
-                    )
-                )
+                self.widgets.append(BulbWidget(d, p))
 
         # set up layout
         l = QHBoxLayout()

@@ -8,10 +8,16 @@ from . import IconButton
 
 
 class BulbWidget(QWidget):
-    def __init__(self, label: str, device: tinytuya.BulbDevice, presets: dict):
+    def __init__(self, device: dict, presets: dict):
         super(BulbWidget, self).__init__()
 
-        self.device = device
+        label = device["name"]
+
+        self.device = tinytuya.BulbDevice(
+            device["id"],
+            device["ip"],
+            device["key"],
+        )
         self.device.set_version(3.3)
         print("Status of {}: {}".format(label, self.device.status()))
         print("Sate of {}: {}".format(label, self.device.state()))
