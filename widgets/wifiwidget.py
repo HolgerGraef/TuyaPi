@@ -28,7 +28,7 @@ class WifiWidget(IconButton):
         signal_result = [line for line in result if "Signal level" in line]
         if not essid_result or not signal_result:
             self.label.setText("Not connected")
-            self.setIcon(qta.icon("ph.wifi-slash"))
+            self.setIcon("ph.wifi-slash")
         else:
             essid = essid_result[0].split(":")[1].strip("\"")
             signal = int(signal_result[0].split("=")[2].split(" ")[0])
@@ -36,14 +36,14 @@ class WifiWidget(IconButton):
             self.label.setText("{}  |  {} dBm".format(essid, signal))
 
     @staticmethod
-    def _signalToIcon(signal: int):
+    def _signalToIcon(signal: int) -> str:
         if signal >= -30:
-            return qta.icon("ph.wifi-high")
+            return "ph.wifi-high"
         elif signal >= -50:
-            return qta.icon("ph.wifi-high")
+            return "ph.wifi-high"
         elif signal >= -60:
-            return qta.icon("ph.wifi-medium")
+            return "ph.wifi-medium"
         elif signal >= -67:
-            return qta.icon("ph.wifi-medium")
+            return "ph.wifi-medium"
         else:
-            return qta.icon("ph.wifi-low")
+            return "ph.wifi-low"

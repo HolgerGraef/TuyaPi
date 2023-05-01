@@ -6,9 +6,10 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
 from . import IconButton
+from . import RefreshingWidget
 
 
-class BluePulsePiWidget(QWidget):
+class BluePulsePiWidget(RefreshingWidget):
     def __init__(self):
         super(BluePulsePiWidget, self).__init__()
 
@@ -17,14 +18,6 @@ class BluePulsePiWidget(QWidget):
         # set up layout
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-
-        # set up timer
-        self.refresh_timer = QTimer()
-        self.refresh_timer.setInterval(1000)
-        self.refresh_timer.timeout.connect(self.refresh)
-        self.refresh_timer.start()
-
-        self.refresh()
 
     def refresh(self):
         devices = glob("/var/bluetooth-handler-input*")
