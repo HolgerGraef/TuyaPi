@@ -42,7 +42,7 @@ class Overlay(QLabel):
         self.hidden.emit()
 
     def refresh(self):
-        date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M:%S</p>")
+        date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
         self.setText(date_time_str)
 
 
