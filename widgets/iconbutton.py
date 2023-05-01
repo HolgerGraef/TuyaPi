@@ -30,6 +30,9 @@ class IconButton(QPushButton):
         if icon is None:
             return
         if isinstance(icon, str):
-            icon = qta.icon(icon)
+            if "spinner" in icon:
+                icon = qta.icon(icon, animation=qta.Spin(self))
+            else:
+                icon = qta.icon(icon)
 
         super(IconButton, self).setIcon(icon)
