@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from widgets import BluePulsePiWidget, BulbWidget, WifiWidget
+from widgets import BluePulsePiWidget, BulbWidget, WifiWidget, UnlockOverlay
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -35,11 +35,22 @@ class Overlay(QLabel):
         self.timer.timeout.connect(self.refresh)
         self.timer.start()
 
+        self.unlockOverlay = UnlockOverlay()
+
         self.refresh()
 
     def mousePressEvent(self, event):
-        self.hide()
-        self.hidden.emit()
+        self.unlockOverlay.setParent(self)
+        self.unlockOverlay.resize(self.size())
+        self.unlockOverlay.start(0.7)
+        self.unlockOverlay.show()
+
+    def mouseReleaseEvent(self, event):
+        if self.unlockOverlay.isVisible():
+            if self.unlockOverlay.progress() >= 1.0:
+                self.hide()
+                self.hidden.emit()
+            self.unlockOverlay.hide()
 
     def refresh(self):
         date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
