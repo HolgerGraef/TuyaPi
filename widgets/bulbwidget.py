@@ -2,9 +2,10 @@ import tinytuya
 
 from collections import namedtuple
 from functools import partial
+from typing import Union
 
-from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal
-from PyQt5.QtWidgets import QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
+from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from . import IconButton
 
@@ -32,7 +33,10 @@ class BulbWorker(QThread):
             self._device_desc["id"],
             self._device_desc["ip"],
             self._device_desc["key"],
+            connection_timeout=1,
         )
+        self._device.set_socketTimeout(1)
+        self._device.set_socketRetryLimit(1)
         self._device.set_version(3.3)
 
         while True:
@@ -87,7 +91,7 @@ class BulbWidget(QWidget):
         super(BulbWidget, self).__init__()
 
         self.worker = BulbWorker(device)
-        self.worker.stateChanged.connect(self.updateButtons)
+        self.worker.stateChanged.connect(self.stateChanged)
         self.worker.actionDone.connect(self.updateButtons)
 
         self.presets = presets
@@ -128,7 +132,16 @@ class BulbWidget(QWidget):
         self.setButtonWaiting(button)
         self.worker.setPreset(preset)
 
-    def updateButtons(self):
+    @pyqtSlot(BulbState)
+    def stateChanged(self, bulb_state: BulbState):
+        self.updateButtons(bulb_state)
+
+    def updateButtons(self, bulb_state: Union[BulbState, None]=None):
+        if bulb_state is not None and "Error" in bulb_state.status:
+            self.setButtonsEnabled(False)
+            self.b_toggle.setIcon("msc.debug-disconnect")
+            return
+
         self.setButtonsEnabled()
         if self.worker.isOn():
             self.b_toggle.setIcon("mdi6.lightbulb-on")
