@@ -2,7 +2,7 @@ import json
 import os
 import signal
 
-from PyQt5.QtCore import QEvent, QObject, QTimer
+from PyQt5.QtCore import QEvent, QObject
 from PyQt5.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from managers import WifiManager
 from widgets import BluePulsePiWidget, BulbWidget, WifiWidget, LockScreen
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -24,6 +25,8 @@ class MainWidget(QWidget):
         self.setGeometry(0, 0, 1920, 1080)
 
         self.setStyleSheet("QWidget { font-size: 42pt; padding: 50px; }")
+
+        self.wifiManager = WifiManager()
 
         presets = json.load(open("presets.json", "r"))
 
@@ -47,7 +50,7 @@ class MainWidget(QWidget):
         l2.addLayout(l)
         l2.addSpacerItem(QSpacerItem(0, 0, vPolicy=QSizePolicy.Expanding))
 
-        l2.addWidget(WifiWidget())
+        l2.addWidget(WifiWidget(self.wifiManager))
 
         # only for BluePulsePi
         if os.path.exists("/home/pi/BluePulsePi"):

@@ -1,49 +1,19 @@
-import subprocess
 import qtawesome as qta
-
-from PyQt5.QtCore import QTimer
 
 from . import IconButton
 
 
 class WifiWidget(IconButton):
-    def __init__(self):
+    def __init__(self, manager):
         super(WifiWidget, self).__init__(qta.icon("fa5s.wifi"), "WiFi")
 
-        # set up timer
-        self.refresh_timer = QTimer()
-        self.refresh_timer.setInterval(1000)
-        self.refresh_timer.timeout.connect(self.refresh)
-        self.refresh_timer.start()
-
+        self.manager = manager
+        self.manager.updated.connect(self.refresh)
         self.refresh()
 
     def refresh(self):
-        completed = subprocess.run(["/usr/sbin/iwconfig", "wlan0"], capture_output=True)
-        result = [
-            line.strip()
-            for line in completed.stdout.decode("utf-8").split("\n")
-        ]
-        essid_result = [line for line in result if "ESSID" in line]
-        signal_result = [line for line in result if "Signal level" in line]
-        if not essid_result or not signal_result:
+        self.setIcon(self.manager.icon)
+        if self.manager.essid:
+            self.label.setText("{}  |  {} dBm".format(self.manager.essid, self.manager.signal))
+        else:
             self.label.setText("Not connected")
-            self.setIcon("ph.wifi-slash")
-        else:
-            essid = essid_result[0].split(":")[1].strip("\"")
-            signal = int(signal_result[0].split("=")[2].split(" ")[0])
-            self.setIcon(self._signalToIcon(signal))
-            self.label.setText("{}  |  {} dBm".format(essid, signal))
-
-    @staticmethod
-    def _signalToIcon(signal: int) -> str:
-        if signal >= -30:
-            return "ph.wifi-high"
-        elif signal >= -50:
-            return "ph.wifi-high"
-        elif signal >= -60:
-            return "ph.wifi-medium"
-        elif signal >= -67:
-            return "ph.wifi-medium"
-        else:
-            return "ph.wifi-low"
