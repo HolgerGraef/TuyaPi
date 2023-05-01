@@ -10,9 +10,9 @@ from . import RefreshingWidget
 
 class BluePulsePiWidget(RefreshingWidget):
     def __init__(self):
-        super(BluePulsePiWidget, self).__init__()
-
         self.widgets = {}
+
+        super(BluePulsePiWidget, self).__init__()
 
         # set up layout
         self.layout = QVBoxLayout()
