@@ -2,8 +2,7 @@ import qtawesome as qta
 
 from glob import glob
 
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QVBoxLayout
 
 from . import IconButton
 from . import RefreshingWidget

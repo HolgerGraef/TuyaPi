@@ -2,11 +2,9 @@ import json
 import os
 import signal
 
-from datetime import datetime
-from PyQt5.QtCore import Qt, QEvent, QObject, QTimer, pyqtSignal
+from PyQt5.QtCore import QEvent, QObject, QTimer
 from PyQt5.QtWidgets import (
     QApplication,
-    QLabel,
     QHBoxLayout,
     QVBoxLayout,
     QSizePolicy,
@@ -14,47 +12,9 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from widgets import BluePulsePiWidget, BulbWidget, WifiWidget, UnlockOverlay
+from widgets import BluePulsePiWidget, BulbWidget, WifiWidget, LockScreen
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-
-class Overlay(QLabel):
-    hidden = pyqtSignal()
-
-    def __init__(self):
-        super(Overlay, self).__init__()
-
-        self.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
-        self.setStyleSheet("background: rgba(0,0,0,80%); color: #CCCCCC; font-size: 200px;")
-
-        self.extraStyles = "<style>p { margin-bottom: 120px; }</style>"
-
-        self.timer = QTimer()
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.refresh)
-        self.timer.start()
-
-        self.unlockOverlay = UnlockOverlay()
-
-        self.refresh()
-
-    def mousePressEvent(self, event):
-        self.unlockOverlay.setParent(self)
-        self.unlockOverlay.resize(self.size())
-        self.unlockOverlay.start(0.7)
-        self.unlockOverlay.show()
-
-    def mouseReleaseEvent(self, event):
-        if self.unlockOverlay.isVisible():
-            if self.unlockOverlay.progress() >= 1.0:
-                self.hide()
-                self.hidden.emit()
-            self.unlockOverlay.hide()
-
-    def refresh(self):
-        date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
-        self.setText(date_time_str)
 
 
 class MainWidget(QWidget):
@@ -96,7 +56,7 @@ class MainWidget(QWidget):
         self.setLayout(l2)
 
         # set up overlay
-        self.overlay = Overlay()
+        self.lockscreen = LockScreen()
 
         # set up overlay timer
         self.overlayTimer = QTimer()
@@ -104,7 +64,7 @@ class MainWidget(QWidget):
         self.overlayTimer.timeout.connect(self.overlayTimeout)
         self.overlayTimer.setSingleShot(True)
 
-        self.overlay.hidden.connect(self.overlayTimer.start)
+        self.lockscreen.hidden.connect(self.overlayTimer.start)
         self.overlayTimer.start()
 
         self.installEventFilter(self)
@@ -124,9 +84,9 @@ class MainWidget(QWidget):
             return super(MainWidget, self).eventFilter(obj, event)
 
     def overlayTimeout(self):
-        self.overlay.setParent(self)
-        self.overlay.resize(self.size())
-        self.overlay.show()
+        self.lockscreen.setParent(self)
+        self.lockscreen.resize(self.size())
+        self.lockscreen.show()
 
 
 

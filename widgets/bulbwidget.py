@@ -27,7 +27,7 @@ class BulbWorker(QThread):
         self._mut = QMutex()
 
         self.start()
-    
+
     def run(self):
         self._device = tinytuya.BulbDevice(
             self._device_desc["id"],
@@ -47,7 +47,7 @@ class BulbWorker(QThread):
 
                 print("Status of {}: {}".format(self._device_desc["name"], bulb_state.status))
                 print("State of {}: {}".format(self._device_desc["name"], bulb_state.state))
-            
+
             self._cond.wait(self._mut, 1000)
 
             while self._action_queue:
