@@ -11,9 +11,10 @@ from . import Overlay, UnlockOverlay
 class LockScreen(Overlay):
     hidden = pyqtSignal()
 
-    def __init__(self, parent: QWidget, wifiManager, lockTimeoutMs: int = 5000):
+    def __init__(self, parent: QWidget, bluetoothManager, wifiManager, lockTimeoutMs: int = 5000):
         super(LockScreen, self).__init__(parent)
 
+        self.bluetoothManager = bluetoothManager
         self.wifiManager = wifiManager
 
         self.extraStyles = "<style>p { margin-bottom: 120px; }</style>"
@@ -45,7 +46,11 @@ class LockScreen(Overlay):
 
     def refresh(self):
         date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
-        self.setText(date_time_str + qta.charmap(self.wifiManager.icon))
+        self.setText(
+            date_time_str +
+            qta.charmap(self.wifiManager.icon) +
+            qta.charmap(self.bluetoothManager.icon)
+        )
 
     def resetLockTimer(self):
         self.lockTimer.start()

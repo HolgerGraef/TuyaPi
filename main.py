@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from managers import WifiManager
+from managers import BluetoothManager, WifiManager
 from widgets import BluePulsePiWidget, BulbWidget, WifiWidget, LockScreen
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -26,6 +26,7 @@ class MainWidget(QWidget):
 
         self.setStyleSheet("QWidget { font-size: 42pt; padding: 50px; }")
 
+        self.bluetoothManager = BluetoothManager()
         self.wifiManager = WifiManager()
 
         presets = json.load(open("presets.json", "r"))
@@ -54,12 +55,12 @@ class MainWidget(QWidget):
 
         # only for BluePulsePi
         if os.path.exists("/home/pi/BluePulsePi"):
-            l2.addWidget(BluePulsePiWidget())
+            l2.addWidget(BluePulsePiWidget(self.bluetoothManager))
 
         self.setLayout(l2)
 
         # set up lockscreen
-        self.lockScreen = LockScreen(self, self.wifiManager)
+        self.lockScreen = LockScreen(self, self.bluetoothManager, self.wifiManager)
 
         self.installEventFilter(self)
         children = self.children()

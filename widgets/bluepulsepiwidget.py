@@ -1,27 +1,26 @@
 import qtawesome as qta
 
-from glob import glob
-
-from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
 from . import IconButton
-from . import RefreshingWidget
 
 
-class BluePulsePiWidget(RefreshingWidget):
-    def __init__(self):
-        self.widgets = {}
-
+class BluePulsePiWidget(QWidget):
+    def __init__(self, manager):
         super(BluePulsePiWidget, self).__init__()
+
+        self.manager = manager
+        self.widgets = {}
 
         # set up layout
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
+        self.manager.updated.connect(self.refresh)
+        self.refresh()
+
     def refresh(self):
-        devices = glob("/var/bluetooth-handler-input*")
-        devices = [open(d, "r").read() for d in devices]
-        for d in devices:
+        for d in self.manager.devices:
             # skip devices that have already been processed
             if d in self.widgets:
                 continue
@@ -30,7 +29,7 @@ class BluePulsePiWidget(RefreshingWidget):
 
         remove_list = []
         for d, w in self.widgets.items():
-            if d in devices:
+            if d in self.manager.devices:
                 # new device?
                 if self.layout.indexOf(w) < 0:
                     self.layout.addWidget(w)
