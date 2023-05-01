@@ -55,17 +55,8 @@ class MainWidget(QWidget):
 
         self.setLayout(l2)
 
-        # set up overlay
-        self.lockscreen = LockScreen()
-
-        # set up overlay timer
-        self.overlayTimer = QTimer()
-        self.overlayTimer.setInterval(5000)
-        self.overlayTimer.timeout.connect(self.overlayTimeout)
-        self.overlayTimer.setSingleShot(True)
-
-        self.lockscreen.hidden.connect(self.overlayTimer.start)
-        self.overlayTimer.start()
+        # set up lockscreen
+        self.lockScreen = LockScreen(self)
 
         self.installEventFilter(self)
         children = self.children()
@@ -78,16 +69,10 @@ class MainWidget(QWidget):
 
     def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         if event.type() == QEvent.MouseButtonPress:
-            self.overlayTimer.start()
+            self.lockScreen.resetLockTimer()
             return False
         else:
             return super(MainWidget, self).eventFilter(obj, event)
-
-    def overlayTimeout(self):
-        self.lockscreen.setParent(self)
-        self.lockscreen.resize(self.size())
-        self.lockscreen.show()
-
 
 
 if __name__ == "__main__":

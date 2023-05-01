@@ -2,14 +2,14 @@ import time
 
 from PyQt5.QtCore import Qt, QRectF, QTimer
 from PyQt5.QtGui import QColor, QPainter, QPen
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QWidget
+
+from . import Overlay
 
 
-class UnlockOverlay(QLabel):
-    def __init__(self):
-        super(UnlockOverlay, self).__init__()
-
-        self.setStyleSheet("background: rgba(0,0,0,80%); color: #CCCCCC; font-size: 200px;")
+class UnlockOverlay(Overlay):
+    def __init__(self, parent: QWidget):
+        super(UnlockOverlay, self).__init__(parent)
 
         self.startTime = 0
         self.duration = 1.0
@@ -23,6 +23,7 @@ class UnlockOverlay(QLabel):
         self.duration = duration
         self.startTime = time.time()
         self.timer.start()
+        self.show()
 
     def progress(self):
         return (time.time() - self.startTime) / self.duration

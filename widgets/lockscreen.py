@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from PyQt5.QtCore import pyqtSignal, QTimer
+from PyQt5.QtWidgets import QWidget
 
 from . import Overlay, UnlockOverlay
 
@@ -8,33 +9,39 @@ from . import Overlay, UnlockOverlay
 class LockScreen(Overlay):
     hidden = pyqtSignal()
 
-    def __init__(self):
-        super(LockScreen, self).__init__()
+    def __init__(self, parent: QWidget, lockTimeoutMs: int = 5000):
+        super(LockScreen, self).__init__(parent)
 
         self.extraStyles = "<style>p { margin-bottom: 120px; }</style>"
 
-        self.timer = QTimer()
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.refresh)
-        self.timer.start()
+        self.lockTimer = QTimer()
+        self.lockTimer.setInterval(lockTimeoutMs)
+        self.lockTimer.setSingleShot(True)
+        self.lockTimer.timeout.connect(self.show)
+        self.lockTimer.start()
 
-        self.unlockOverlay = UnlockOverlay()
+        self.refreshTimer = QTimer()
+        self.refreshTimer.setInterval(1000)
+        self.refreshTimer.timeout.connect(self.refresh)
+        self.refreshTimer.start()
+
+        self.unlockOverlay = UnlockOverlay(self)
 
         self.refresh()
 
     def mousePressEvent(self, event):
-        self.unlockOverlay.setParent(self)
-        self.unlockOverlay.resize(self.size())
         self.unlockOverlay.start(0.7)
-        self.unlockOverlay.show()
 
     def mouseReleaseEvent(self, event):
         if self.unlockOverlay.isVisible():
             if self.unlockOverlay.progress() >= 1.0:
                 self.hide()
-                self.hidden.emit()
+                self.resetLockTimer()
             self.unlockOverlay.hide()
 
     def refresh(self):
         date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
         self.setText(date_time_str)
+
+    def resetLockTimer(self):
+        self.lockTimer.start()
