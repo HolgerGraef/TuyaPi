@@ -2,7 +2,8 @@ import qtawesome as qta
 
 from datetime import datetime
 
-from PyQt5.QtCore import pyqtSignal, QTimer
+from PyQt5.QtCore import pyqtSignal, Qt, QTimer
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 
 from . import Overlay, UnlockOverlay
@@ -11,8 +12,12 @@ from . import Overlay, UnlockOverlay
 class LockScreen(Overlay):
     hidden = pyqtSignal()
 
-    def __init__(self, parent: QWidget, bluetoothManager, wifiManager, lockTimeoutMs: int = 5000):
+    def __init__(self, parent: QWidget, bluetoothManager, wifiManager, lockTimeoutMs: int = 500):
         super(LockScreen, self).__init__(parent)
+
+        self.background = QPixmap("background.png")
+        self.infoOverlay = Overlay(self)
+        self.infoOverlay.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
         self.bluetoothManager = bluetoothManager
         self.wifiManager = wifiManager
@@ -46,7 +51,7 @@ class LockScreen(Overlay):
 
     def refresh(self):
         date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
-        self.setText(
+        self.infoOverlay.setText(
             date_time_str +
             qta.charmap(self.wifiManager.icon) +
             qta.charmap(self.bluetoothManager.icon)
@@ -54,3 +59,19 @@ class LockScreen(Overlay):
 
     def resetLockTimer(self):
         self.lockTimer.start()
+
+    def hide(self):
+        super(LockScreen, self).hide()
+
+        # skip when called from constructor
+        if hasattr(self, "infoOverlay"):
+            self.infoOverlay.hide()
+
+    def show(self):
+        super(LockScreen, self).show()
+        self.infoOverlay.show()
+
+        self.setPixmap(self.background.scaled(
+            self.size(),
+            Qt.AspectRatioMode.KeepAspectRatioByExpanding
+        ))

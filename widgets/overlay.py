@@ -9,7 +9,9 @@ class Overlay(QLabel):
         super(Overlay, self).__init__(parent)
 
         self.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
-        self.setStyleSheet("background: rgba(0,0,0,80%); color: #CCCCCC; font-size: 200px;")
+        self.setStyleSheet(
+            "background: rgba(0,0,0,70%); color: #CCCCCC; font-size: 200px; padding: 0px;"
+        )
 
         self.hide()
 
