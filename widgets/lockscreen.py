@@ -1,3 +1,5 @@
+import qtawesome as qta
+
 from datetime import datetime
 
 from PyQt5.QtCore import pyqtSignal, QTimer
@@ -9,8 +11,10 @@ from . import Overlay, UnlockOverlay
 class LockScreen(Overlay):
     hidden = pyqtSignal()
 
-    def __init__(self, parent: QWidget, lockTimeoutMs: int = 5000):
+    def __init__(self, parent: QWidget, wifiManager, lockTimeoutMs: int = 5000):
         super(LockScreen, self).__init__(parent)
+
+        self.wifiManager = wifiManager
 
         self.extraStyles = "<style>p { margin-bottom: 120px; }</style>"
 
@@ -41,7 +45,7 @@ class LockScreen(Overlay):
 
     def refresh(self):
         date_time_str = datetime.now().strftime(self.extraStyles + "<p>%d %b %Y</p><p>%H:%M</p>")
-        self.setText(date_time_str)
+        self.setText(date_time_str + qta.charmap(self.wifiManager.icon))
 
     def resetLockTimer(self):
         self.lockTimer.start()

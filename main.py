@@ -59,7 +59,7 @@ class MainWidget(QWidget):
         self.setLayout(l2)
 
         # set up lockscreen
-        self.lockScreen = LockScreen(self)
+        self.lockScreen = LockScreen(self, self.wifiManager)
 
         self.installEventFilter(self)
         children = self.children()
