@@ -12,7 +12,7 @@ from . import Overlay, UnlockOverlay
 class LockScreen(Overlay):
     hidden = pyqtSignal()
 
-    def __init__(self, parent: QWidget, bluetoothManager, wifiManager, lockTimeoutMs: int = 500):
+    def __init__(self, parent: QWidget, bluetoothManager, wifiManager, lockTimeoutMs: int = 5000):
         super(LockScreen, self).__init__(parent)
 
         self.background = QPixmap("background.png")
