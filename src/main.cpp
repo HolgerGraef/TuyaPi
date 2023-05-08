@@ -22,9 +22,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    tuya::Scanner scanner;
+    tuya::Loop loop;
+    tuya::Scanner scanner(loop);
     scanner.scan();
-    tuya::Device("192.168.0.12");
+
     return 0;
 
     makeQtAwesome();
