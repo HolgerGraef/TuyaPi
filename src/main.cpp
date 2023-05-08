@@ -24,7 +24,9 @@ int main(int argc, char *argv[])
 
     tuya::Loop loop;
     tuya::Scanner scanner(loop);
-    scanner.scan();
+    for (;;) {
+        loop.loop();
+    }
 
     return 0;
 
