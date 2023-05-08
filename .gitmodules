@@ -1,12 +1,6 @@
 [submodule "QtAwesome"]
 	path = QtAwesome
 	url = https://github.com/gamecreature/QtAwesome.git
-[submodule "json"]
-	path = tuyacpp/json
-	url = https://github.com/nlohmann/json.git
-[submodule "CRCpp"]
-	path = tuyacpp/CRCpp
-	url = https://github.com/d-bahr/CRCpp.git
 [submodule "tuyacpp"]
 	path = tuyacpp
 	url = https://github.com/hgrf/tuyacpp.git
