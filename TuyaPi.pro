@@ -19,14 +19,16 @@ SOURCES += \
     src/main.cpp \
     src/mainwidget.cpp \
     src/wifimanager.cpp \
-    src/wifiwidget.cpp
+    src/wifiwidget.cpp \
+    src/bulbwidget.cpp
 
 HEADERS += \
     src/iconbutton.h \
     src/main.h \
     src/mainwidget.h \
     src/wifimanager.h \
-    src/wifiwidget.h
+    src/wifiwidget.h \
+    src/bulbwidget.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
