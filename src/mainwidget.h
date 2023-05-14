@@ -15,6 +15,10 @@ public:
     MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
 
+public slots:
+    void deviceDiscovered(QString ip);
+    void newDeviceData(QString ip, QJsonDocument data);
+
 private:
     WifiManager mWifiManager;
     tuya::TuyaWorker mTuyaWorker;

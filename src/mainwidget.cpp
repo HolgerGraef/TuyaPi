@@ -26,6 +26,8 @@ MainWidget::MainWidget(QWidget *parent)
     mainLayout->addWidget(new WifiWidget(&mWifiManager));
     setLayout(mainLayout);
 
+    connect(&mTuyaWorker, SIGNAL(deviceDiscovered(QString)), this, SLOT(deviceDiscovered(QString)));
+    connect(&mTuyaWorker, SIGNAL(newDeviceData(QString, QJsonDocument)), this, SLOT(newDeviceData(QString, QJsonDocument)));
     mTuyaWorker.start();
 }
 
@@ -34,3 +36,12 @@ MainWidget::~MainWidget()
     // TODO: gracefully terminate worker thread
 }
 
+void MainWidget::deviceDiscovered(QString ip)
+{
+    (void) ip;
+}
+
+void MainWidget::newDeviceData(QString ip, QJsonDocument data)
+{
+    std::cout << "Main widget received from " << ip.toStdString() << ": " << data.toJson().toStdString() << std::endl;
+}
