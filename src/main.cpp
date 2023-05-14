@@ -2,9 +2,6 @@
 #include "mainwidget.h"
 #include <QApplication>
 
-#include <tuyacpp/scanner.hpp>
-#include <tuyacpp/device.hpp>
-
 static fa::QtAwesome* mAwesome = nullptr;
 
 static void makeQtAwesome()
@@ -21,14 +18,6 @@ fa::QtAwesome* awesome()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-    tuya::Loop loop;
-    tuya::Scanner scanner(loop);
-    for (;;) {
-        loop.loop();
-    }
-
-    return 0;
 
     makeQtAwesome();
     MainWidget w;

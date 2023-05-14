@@ -14,9 +14,12 @@ MainWidget::MainWidget(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->addWidget(new WifiWidget(&mWifiManager));
     setLayout(mainLayout);
+
+    mTuyaWorker.start();
 }
 
 MainWidget::~MainWidget()
 {
+    // TODO: gracefully terminate worker thread
 }
 

@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <tuyacpp/bindings/qt.hpp>
+
 #include "wifimanager.h"
 
 class MainWidget : public QWidget
@@ -15,6 +17,7 @@ public:
 
 private:
     WifiManager mWifiManager;
+    tuya::TuyaWorker mTuyaWorker;
 };
 
 #endif // MAINWIDGET_H

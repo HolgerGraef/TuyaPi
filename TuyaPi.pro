@@ -7,6 +7,7 @@ CONFIG += c++14
 CONFIG += fontAwesomeFree
 include(QtAwesome/QtAwesome/QtAwesome.pri)
 
+CONFIG += tuyaCpp
 include(tuyacpp/tuyacpp.pri)
 
 # You can make your code fail to compile if it uses deprecated APIs.
