@@ -1,6 +1,5 @@
 #include "mainwidget.h"
 
-#include "bulbwidget.h"
 #include "wifiwidget.h"
 
 #include <QSpacerItem>
@@ -16,8 +15,11 @@ MainWidget::MainWidget(QWidget *parent)
     QHBoxLayout *devLayout = new QHBoxLayout();
     const auto& devices = mTuyaWorker.scanner().knownDevices();
     for (const auto& dev : devices) {
-        if (dev["category"] == "dj")  // light bulb
-            devLayout->addWidget(new BulbWidget(dev));
+        if (dev["category"] == "dj") { // light bulb
+            auto bulb = new BulbWidget(dev);
+            mBulbWidgets[QString::fromStdString(dev["ip"])] = bulb;
+            devLayout->addWidget(bulb);
+        }
     }
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -43,5 +45,7 @@ void MainWidget::deviceDiscovered(QString ip)
 
 void MainWidget::newDeviceData(QString ip, QJsonDocument data)
 {
-    std::cout << "Main widget received from " << ip.toStdString() << ": " << data.toJson().toStdString() << std::endl;
+    auto bulb = mBulbWidgets.find(ip);
+    if (bulb != mBulbWidgets.end())
+        bulb->second->handleData(ip, data);
 }

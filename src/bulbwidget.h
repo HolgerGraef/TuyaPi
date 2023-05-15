@@ -1,6 +1,7 @@
 #ifndef BULB_WIDGET_H
 #define BULB_WIDGET_H
 
+#include <QJsonDocument>
 #include <QWidget>
 
 #include <nlohmann/json.hpp>
@@ -14,6 +15,8 @@ class BulbWidget : public QWidget
 
 public:
     BulbWidget(const ordered_json& dev);
+
+    void handleData(QString ip, QJsonDocument data);
 
 private:
     IconButton mBtnToggle;
