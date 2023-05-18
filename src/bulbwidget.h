@@ -16,7 +16,7 @@ class BulbWidget : public QWidget
     Q_OBJECT
 
 public:
-    BulbWidget(const ordered_json& dev, tuya::TuyaWorker& worker);
+    BulbWidget(std::shared_ptr<tuya::Device> dev);
 
     void handleData(QString ip, QJsonDocument data);
 
@@ -24,8 +24,7 @@ public slots:
     void toggle();
 
 private:
-    tuya::TuyaWorker& mWorker;
-    std::string mIp;
+    std::shared_ptr<tuya::Device> mDev;
 
     IconButton mBtnToggle;
 };

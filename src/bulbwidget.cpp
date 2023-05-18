@@ -5,10 +5,10 @@
 
 #include "main.h"
 
-BulbWidget::BulbWidget(const ordered_json& dev, tuya::TuyaWorker& worker) : mWorker(worker), mIp(dev["ip"]) {
+BulbWidget::BulbWidget(std::shared_ptr<tuya::Device> dev) : mDev(dev) {
     QVBoxLayout *layout = new QVBoxLayout();
 
-    mBtnToggle.setText(QString::fromStdString(dev["name"]));
+    mBtnToggle.setText(QString::fromStdString(dev->name()));
     mBtnToggle.setIcon(awesome()->icon(fa::mdi6, fa::mdi6_lightbulb_outline));
 
     layout->addWidget(&mBtnToggle);
@@ -27,7 +27,6 @@ void BulbWidget::handleData(QString ip, QJsonDocument data) {
 }
 
 void BulbWidget::toggle() {
-    auto dev = mWorker.scanner().getDevice(mIp);
-    if (dev)
-        dev->setOn(true);
+    mBtnToggle.setEnabled(false);
+    mDev->toggle([this](const ordered_json&){ mBtnToggle.setEnabled(true); });
 }
