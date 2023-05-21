@@ -17,6 +17,8 @@ public:
     MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
 
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+
 public slots:
     void deviceDiscovered(QString ip);
     void newDeviceData(QString ip, QJsonDocument data);

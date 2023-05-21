@@ -2,6 +2,7 @@
 
 #include "wifiwidget.h"
 
+#include <QEvent>
 #include <QSpacerItem>
 #include <QVBoxLayout>
 
@@ -34,6 +35,24 @@ MainWidget::MainWidget(QWidget *parent)
     connect(&mTuyaWorker, SIGNAL(deviceDiscovered(QString)), this, SLOT(deviceDiscovered(QString)));
     connect(&mTuyaWorker, SIGNAL(newDeviceData(QString, QJsonDocument)), this, SLOT(newDeviceData(QString, QJsonDocument)));
     mTuyaWorker.start();
+
+    installEventFilter(this);
+    auto childrenList = children();
+    while (childrenList.length()) {
+        auto c = childrenList.takeFirst();
+        c->installEventFilter(this);
+        childrenList += c->children();
+    }
+}
+
+bool MainWidget::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        mLockScreen->resetLockTimer();
+        return false;
+    } else {
+        return QLabel::eventFilter(watched, event);
+    }
+
 }
 
 MainWidget::~MainWidget()
