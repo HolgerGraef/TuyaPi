@@ -28,5 +28,5 @@ void BulbWidget::handleData(QString ip, QJsonDocument data) {
 
 void BulbWidget::toggle() {
     mBtnToggle.setEnabled(false);
-    mDev->toggle([this](const ordered_json&){ mBtnToggle.setEnabled(true); });
+    mDev->toggle([this](tuya::Device::CommandStatus, const ordered_json&){ mBtnToggle.setEnabled(true); });
 }
