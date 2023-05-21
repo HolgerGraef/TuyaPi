@@ -9,8 +9,9 @@ MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
 {
     setGeometry(0, 0, 1920, 1080);
-
     setStyleSheet("QWidget { font-size: 42pt; padding: 50px; }");
+
+    mLockScreen = new LockScreen(this, mWifiManager);
 
     QHBoxLayout *devLayout = new QHBoxLayout();
     const auto& devices = mTuyaWorker.scanner().knownDevices();

@@ -6,6 +6,7 @@
 #include <tuyacpp/bindings/qt.hpp>
 
 #include "bulbwidget.h"
+#include "lockscreen.h"
 #include "wifimanager.h"
 
 class MainWidget : public QWidget
@@ -21,6 +22,7 @@ public slots:
     void newDeviceData(QString ip, QJsonDocument data);
 
 private:
+    LockScreen* mLockScreen;
     std::map<QString, BulbWidget*> mBulbWidgets;
     WifiManager mWifiManager;
     tuya::TuyaWorker mTuyaWorker;
