@@ -11,6 +11,10 @@ WifiWidget::WifiWidget(WifiManager *manager, QWidget *parent)
 
 void WifiWidget::refresh()
 {
-    setText(mManager->essid() + "  |  " + QString::number(mManager->signal()) + " dBm");
+    if (mManager->essid().length())
+        setText(mManager->essid() + "  |  " + QString::number(mManager->signal()) + " dBm");
+    else
+        setText("Not connected");
+
     setIcon(mManager->icon());
 }

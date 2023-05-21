@@ -28,6 +28,11 @@ const QIcon& WifiManager::icon() const
     return mIcon;
 }
 
+QString WifiManager::iconString() const
+{
+    return signalToIconString(mSignal);
+}
+
 void WifiManager::refresh()
 {
     QString essidLine;
@@ -66,11 +71,25 @@ void WifiManager::refresh()
     emit updated();
 }
 
+int WifiManager::signalToCharCode(int signal)
+{
+    if (signal >= -30)
+        return fa::mdi6_wifi_strength_4;
+    else if (signal >= -50)
+        return fa::mdi6_wifi_strength_3;
+    else if (signal >= -67)
+        return fa::mdi6_wifi_strength_2;
+    else if (signal >= -99)
+        return fa::mdi6_wifi_strength_1;
+    return fa::mdi6_wifi_strength_off_outline;
+}
+
 QIcon WifiManager::signalToIcon(int signal)
 {
-    if(signal >= -50)
-        return awesome()->icon(fa::fa_solid, fa::fa_wifi_strong);
-    else if(signal >= -67)
-        return awesome()->icon(fa::fa_solid, fa::fa_wifi_3);
-    return awesome()->icon(fa::fa_solid, fa::fa_wifi);
+    return awesome()->icon(fa::mdi6, signalToCharCode(signal));
+}
+
+QString WifiManager::signalToIconString(int signal)
+{
+    return QString::fromStdU32String(std::u32string({static_cast<char32_t>(signalToCharCode(signal))}));
 }

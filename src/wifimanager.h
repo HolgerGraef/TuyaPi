@@ -13,11 +13,14 @@ public:
     QString essid() const;
     int signal() const;
     const QIcon& icon() const;
+    QString iconString() const;
 
 public slots:
     void refresh();
 
 private:
+    static int signalToCharCode(int signal);
+    static QString signalToIconString(int signal);
     static QIcon signalToIcon(int signal);
 
     QTimer mRefreshTimer;
