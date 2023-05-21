@@ -55,6 +55,6 @@ void LockScreen::show()
 
 void LockScreen::refresh()
 {
-    const auto &dateTimeStr = QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm");
+    const auto &dateTimeStr = QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm\n") + mWifiManager.iconString();
     mInfoOverlay->setText(dateTimeStr);
 }
