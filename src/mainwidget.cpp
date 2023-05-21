@@ -6,10 +6,12 @@
 #include <QVBoxLayout>
 
 MainWidget::MainWidget(QWidget *parent)
-    : QWidget(parent)
+    : QLabel(parent)
 {
     setGeometry(0, 0, 1920, 1080);
-    setStyleSheet("QWidget { font-size: 42pt; padding: 50px; }");
+    setStyleSheet("QWidget { font-size: 42pt; }");
+
+    setPixmap(QPixmap("background.png").scaled(size(), Qt::KeepAspectRatioByExpanding));
 
     mLockScreen = new LockScreen(this, mWifiManager);
 

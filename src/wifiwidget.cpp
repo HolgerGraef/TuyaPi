@@ -16,5 +16,5 @@ void WifiWidget::refresh()
     else
         setText("Not connected");
 
-    setIcon(mManager->icon());
+    setIcon(mManager->iconString());
 }

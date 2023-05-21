@@ -10,6 +10,8 @@ class IconButton : public QPushButton
     Q_OBJECT
 public:
     explicit IconButton(QWidget *parent = nullptr);
+    void setIcon(int charCode);
+    void setIcon(const QString& iconString);
     void setText(const QString& text);
 
 private:

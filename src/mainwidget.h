@@ -1,7 +1,7 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
-#include <QWidget>
+#include <QLabel>
 
 #include <tuyacpp/bindings/qt.hpp>
 
@@ -9,7 +9,7 @@
 #include "lockscreen.h"
 #include "wifimanager.h"
 
-class MainWidget : public QWidget
+class MainWidget : public QLabel
 {
     Q_OBJECT
 
