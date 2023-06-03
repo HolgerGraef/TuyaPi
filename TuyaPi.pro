@@ -16,16 +16,22 @@ include(tuyacpp/tuyacpp.pri)
 
 SOURCES += \
     src/iconbutton.cpp \
+    src/lockscreen.cpp \
     src/main.cpp \
     src/mainwidget.cpp \
+    src/overlay.cpp \
+    src/unlockoverlay.cpp \
     src/wifimanager.cpp \
     src/wifiwidget.cpp \
     src/bulbwidget.cpp
 
 HEADERS += \
     src/iconbutton.h \
+    src/lockscreen.h \
     src/main.h \
     src/mainwidget.h \
+    src/overlay.h \
+    src/unlockoverlay.h \
     src/wifimanager.h \
     src/wifiwidget.h \
     src/bulbwidget.h
