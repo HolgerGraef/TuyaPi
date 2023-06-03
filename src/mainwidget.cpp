@@ -34,6 +34,8 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect(&mTuyaWorker, SIGNAL(deviceDiscovered(QString)), this, SLOT(deviceDiscovered(QString)));
     connect(&mTuyaWorker, SIGNAL(newDeviceData(QString, QJsonDocument)), this, SLOT(newDeviceData(QString, QJsonDocument)));
+    connect(&mTuyaWorker, SIGNAL(deviceConnected(QString)), this, SLOT(deviceConnected(QString)));
+    connect(&mTuyaWorker, SIGNAL(deviceDisconnected(QString)), this, SLOT(deviceDisconnected(QString)));
     mTuyaWorker.start();
 
     installEventFilter(this);
@@ -58,6 +60,20 @@ bool MainWidget::eventFilter(QObject *watched, QEvent *event) {
 MainWidget::~MainWidget()
 {
     // TODO: gracefully terminate worker thread
+}
+
+void MainWidget::deviceConnected(QString ip)
+{
+    auto bulb = mBulbWidgets.find(ip);
+    if (bulb != mBulbWidgets.end())
+        bulb->second->handleConnected(ip);
+}
+
+void MainWidget::deviceDisconnected(QString ip)
+{
+    auto bulb = mBulbWidgets.find(ip);
+    if (bulb != mBulbWidgets.end())
+        bulb->second->handleDisconnected(ip);
 }
 
 void MainWidget::deviceDiscovered(QString ip)

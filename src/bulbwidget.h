@@ -18,7 +18,9 @@ class BulbWidget : public QWidget
 public:
     BulbWidget(std::shared_ptr<tuya::Device> dev);
 
-    void handleData(QString ip, QJsonDocument data);
+    void handleConnected(const QString& ip);
+    void handleDisconnected(const QString& ip);
+    void handleData(const QString& ip, const QJsonDocument& data);
 
 public slots:
     void toggle();

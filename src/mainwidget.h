@@ -20,6 +20,8 @@ public:
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public slots:
+    void deviceConnected(QString ip);
+    void deviceDisconnected(QString ip);
     void deviceDiscovered(QString ip);
     void newDeviceData(QString ip, QJsonDocument data);
 
