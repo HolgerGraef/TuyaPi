@@ -20,7 +20,7 @@ MainWidget::MainWidget(QWidget *parent)
     const auto& devices = mTuyaWorker.scanner().knownDevices();
     for (const auto& dev : devices) {
         if (dev["category"] == "dj") { // light bulb
-            auto bulb = new BulbWidget(mTuyaWorker.scanner().getDevice(dev["ip"]));
+            auto bulb = new BulbWidget(this, mTuyaWorker.scanner().getDevice(dev["ip"]));
             mBulbWidgets[QString::fromStdString(dev["ip"])] = bulb;
             devLayout->addWidget(bulb);
         }
@@ -48,7 +48,7 @@ MainWidget::MainWidget(QWidget *parent)
 }
 
 bool MainWidget::eventFilter(QObject *watched, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
+    if ((event->type() == QEvent::MouseButtonPress) || (event->type() == QEvent::MouseMove)) {
         mLockScreen->resetLockTimer();
         return false;
     } else {
