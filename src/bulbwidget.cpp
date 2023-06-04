@@ -5,16 +5,16 @@
 
 #include "main.h"
 
-BrightnessOverlay::BrightnessOverlay(QWidget *parent, QString label) : Overlay(parent) {
+SliderOverlay::SliderOverlay(QWidget *parent, QString label) : Overlay(parent) {
     QVBoxLayout *layout = new QVBoxLayout();
 
     mCloseButton.setText(label);
     mCloseButton.setIcon(fa::mdi6_close);
 
-    mSldBrightness.setMinimum(0);
-    mSldBrightness.setMaximum(100);
-    mSldBrightness.setOrientation(Qt::Orientation::Horizontal);
-    mSldBrightness.setStyleSheet(
+    mSlider.setMinimum(0);
+    mSlider.setMaximum(100);
+    mSlider.setOrientation(Qt::Orientation::Horizontal);
+    mSlider.setStyleSheet(
         "QSlider { "
             "height: 400px;"
             "background: transparent;"
@@ -33,19 +33,24 @@ BrightnessOverlay::BrightnessOverlay(QWidget *parent, QString label) : Overlay(p
     );
 
     layout->addWidget(&mCloseButton);
-    layout->addWidget(&mSldBrightness);
+    layout->addWidget(&mSlider);
 
     setLayout(layout);
 
-    connect(&mSldBrightness, SIGNAL(valueChanged(int)), this, SIGNAL(brightnessChanged(int)));
+    connect(&mSlider, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
     connect(&mCloseButton, SIGNAL(clicked()), this, SLOT(hide()));
 }
 
-void BrightnessOverlay::setSliderValue(int value) {
-    mSldBrightness.setValue(value);
+void SliderOverlay::setSliderValue(int value) {
+    mSlider.setValue(value);
 }
 
-BulbWidget::BulbWidget(QWidget *parent, std::shared_ptr<tuya::Device> dev) : QWidget(parent), mDev(dev), mBrightnessOverlay(parent, QString::fromStdString(dev->name())) {
+BulbWidget::BulbWidget(QWidget *parent, std::shared_ptr<tuya::Device> dev)
+    : QWidget(parent),
+      mDev(dev),
+      mBrightnessOverlay(std::make_unique<SliderOverlay>(parent, QString::fromStdString(dev->name()))),
+      mColorTempOverlay(std::make_unique<SliderOverlay>(parent, QString::fromStdString(dev->name())))
+{
     QVBoxLayout *layout = new QVBoxLayout();
 
     mNextBrightnessValue = 0;
@@ -54,6 +59,11 @@ BulbWidget::BulbWidget(QWidget *parent, std::shared_ptr<tuya::Device> dev) : QWi
     mSetBrightnessTimer.setSingleShot(true);
     connect(&mSetBrightnessTimer, SIGNAL(timeout()), this, SLOT(setNextBrightnessValue()));
 
+    mNextColorTempValue = 0;
+    mSetColorTempTimer.setInterval(300);
+    mSetColorTempTimer.setSingleShot(true);
+    connect(&mSetColorTempTimer, SIGNAL(timeout()), this, SLOT(setNextColortempValue()));
+
     setEnabled(false);
     mBtnToggle.setText(QString::fromStdString(dev->name()));
     mBtnToggle.setIcon(fa::mdi6_lightbulb_outline);
@@ -61,14 +71,20 @@ BulbWidget::BulbWidget(QWidget *parent, std::shared_ptr<tuya::Device> dev) : QWi
     mBtnBrightness.setText("Brightness");
     mBtnBrightness.setIcon(fa::mdi6_circle_slice_1);
 
+    mBtnColorTemp.setText("Color temperature");
+    mBtnColorTemp.setIcon(fa::mdi6_circle_slice_1);
+
     layout->addWidget(&mBtnToggle);
     layout->addWidget(&mBtnBrightness);
+    layout->addWidget(&mBtnColorTemp);
 
     setLayout(layout);
 
     connect(&mBtnToggle, SIGNAL(clicked()), this, SLOT(toggle()));
-    connect(&mBtnBrightness, SIGNAL(clicked()), &mBrightnessOverlay, SLOT(show()));
-    connect(&mBrightnessOverlay, SIGNAL(brightnessChanged(int)), this, SLOT(setBrightness(int)));
+    connect(&mBtnBrightness, SIGNAL(clicked()), mBrightnessOverlay.get(), SLOT(show()));
+    connect(mBrightnessOverlay.get(), SIGNAL(valueChanged(int)), this, SLOT(setBrightness(int)));
+    connect(&mBtnColorTemp, SIGNAL(clicked()), mColorTempOverlay.get(), SLOT(show()));
+    connect(mColorTempOverlay.get(), SIGNAL(valueChanged(int)), this, SLOT(setColorTemp(int)));
 }
 
 void BulbWidget::handleConnected(const QString &ip) {
@@ -93,7 +109,12 @@ void BulbWidget::handleData(const QString& ip, const QJsonDocument& data) {
         if(data.object().contains("brightness")) {
             int brightness7 = data.object()["brightness"].toInt() * 7 / mDev->brightnessScale();
             mBtnBrightness.setIcon(fa::mdi6_circle_slice_1 + brightness7);
-            mBrightnessOverlay.setSliderValue(data.object()["brightness"].toInt() * 100 / mDev->brightnessScale());
+            mBrightnessOverlay->setSliderValue(data.object()["brightness"].toInt() * 100 / mDev->brightnessScale());
+        }
+        if(data.object().contains("colourtemp")) {
+            int colortemp7 = data.object()["colourtemp"].toInt() * 7 / mDev->colorTempScale();
+            mBtnColorTemp.setIcon(fa::mdi6_circle_slice_1 + colortemp7);
+            mColorTempOverlay->setSliderValue(data.object()["colourtemp"].toInt() * 100 / mDev->colorTempScale());
         }
     }
 }
@@ -137,4 +158,34 @@ void BulbWidget::setBrightness(int value) {
 
 void BulbWidget::setNextBrightnessValue() {
     setBrightness(mNextBrightnessValue);
+}
+
+void BulbWidget::setColorTemp(int value) {
+    if (mDevIsBusy) {
+        mNextColorTempValue = value;
+        mSetColorTempTimer.start();
+        return;
+    }
+
+    mDevIsBusy = true;
+    int ret = mDev->setColorTemp(
+        value * mDev->colorTempScale() / 100,
+        [this, value](tuya::Device::CommandStatus status, const ordered_json& data) {
+            (void) status;
+            (void) data;
+            mDevIsBusy = false;
+            if (status != tuya::Device::CMD_OK) {
+                mNextColorTempValue = value;
+                mSetColorTempTimer.start();
+            }
+        }
+    );
+    if (ret != 0) {
+        mNextColorTempValue = value;
+        mSetColorTempTimer.start();
+    }
+}
+
+void BulbWidget::setNextColortempValue() {
+    setColorTemp(mNextColorTempValue);
 }

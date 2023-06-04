@@ -16,20 +16,21 @@ using ordered_json = nlohmann::ordered_json;
 
 class BulbWidget;
 
-class BrightnessOverlay : public Overlay
+class SliderOverlay : public Overlay
 {
     Q_OBJECT
 
 public:
-    BrightnessOverlay(QWidget *parent, QString label);
+    SliderOverlay(QWidget *parent, QString label);
+
     void setSliderValue(int value);
 
 signals:
-    void brightnessChanged(int);
+    void valueChanged(int);
 
 private:
     IconButton mCloseButton;
-    QSlider mSldBrightness;
+    QSlider mSlider;
 };
 
 class BulbWidget : public QWidget
@@ -46,18 +47,24 @@ public:
 public slots:
     void toggle();
     void setBrightness(int value);
+    void setColorTemp(int value);
     void setNextBrightnessValue();
+    void setNextColortempValue();
 
 private:
     std::shared_ptr<tuya::Device> mDev;
 
     IconButton mBtnToggle;
     IconButton mBtnBrightness;
-    BrightnessOverlay mBrightnessOverlay;
+    std::unique_ptr<SliderOverlay> mBrightnessOverlay;
+    IconButton mBtnColorTemp;
+    std::unique_ptr<SliderOverlay> mColorTempOverlay;
 
     bool mDevIsBusy;
     int mNextBrightnessValue;
     QTimer mSetBrightnessTimer;
+    int mNextColorTempValue;
+    QTimer mSetColorTempTimer;
 };
 
 #endif // BULB_WIDGET_H
