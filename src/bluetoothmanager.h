@@ -1,37 +1,36 @@
 #ifndef BLUETOOTHMANAGER_H
 #define BLUETOOTHMANAGER_H
 
+#include <QBluetoothDeviceDiscoveryAgent>
+#include <QBluetoothLocalDevice>
+#include <QIcon>
 #include <QObject>
 #include <QTimer>
-#include <QIcon>
-
-#include <QBluetoothLocalDevice>
-#include <QBluetoothDeviceDiscoveryAgent>
 
 class BluetoothManager : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit BluetoothManager(QObject *parent = nullptr);
-    QStringList devices() const;
-    const QIcon icon() const;
-    QString iconString() const;
+  explicit BluetoothManager(QObject* parent = nullptr);
+  QStringList devices() const;
+  const QIcon icon() const;
+  QString iconString() const;
 
 signals:
-    void updated();
+  void updated();
 
 private slots:
-    void refresh();
+  void refresh();
 
-    void onDeviceDiscovered(const QBluetoothDeviceInfo&);
+  void onDeviceDiscovered(const QBluetoothDeviceInfo&);
 
 private:
-    QBluetoothDeviceDiscoveryAgent mAgent;
-    QBluetoothLocalDevice mLocalDevice;
+  QBluetoothDeviceDiscoveryAgent mAgent;
+  QBluetoothLocalDevice mLocalDevice;
 
-    QList<QBluetoothDeviceInfo> mDevices;
+  QList<QBluetoothDeviceInfo> mDevices;
 
-    QTimer mRefreshTimer;
+  QTimer mRefreshTimer;
 };
 
 #endif // BLUETOOTHMANAGER_H

@@ -7,20 +7,20 @@
 
 class UnlockOverlay : public Overlay
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    UnlockOverlay(QWidget* parent);
+  UnlockOverlay(QWidget* parent);
 
-    virtual void paintEvent(QPaintEvent* event) override;
-    unsigned progress();
-    void start(unsigned durationMs);
+  virtual void paintEvent(QPaintEvent* event) override;
+  unsigned progress();
+  void start(unsigned durationMs);
 
 private:
-    QTimer mTimer;
+  QTimer mTimer;
 
-    qint64 mStartTimeMs;
-    unsigned mDurationMs;
-    unsigned mDiameter;
+  qint64 mStartTimeMs;
+  unsigned mDurationMs;
+  unsigned mDiameter;
 };
 
 #endif // UNLOCKOVERLAY_H

@@ -1,16 +1,19 @@
 #include "overlay.h"
 
-Overlay::Overlay(QWidget* parent) : QLabel(parent)
+Overlay::Overlay(QWidget* parent)
+  : QLabel(parent)
 {
-    setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-    setStyleSheet("background: rgba(0,0,0,70%); color: #CCCCCC; font-size: 200px; padding: 0px;");
+  setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+  setStyleSheet("background: rgba(0,0,0,70%); color: #CCCCCC; font-size: "
+                "200px; padding: 0px;");
 
-    hide();
+  hide();
 }
 
-void Overlay::show()
+void
+Overlay::show()
 {
-    resize(parentWidget()->size());
-    QLabel::show();
-    raise();
+  resize(parentWidget()->size());
+  QLabel::show();
+  raise();
 }

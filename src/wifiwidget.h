@@ -8,15 +8,15 @@
 
 class WifiWidget : public IconButton
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit WifiWidget(WifiManager* manager, QWidget *parent = nullptr);
+  explicit WifiWidget(WifiManager* manager, QWidget* parent = nullptr);
 
 private slots:
-    void refresh();
+  void refresh();
 
 private:
-    WifiManager* mManager;
+  WifiManager* mManager;
 };
 
 #endif // WIFIWIDGET_H

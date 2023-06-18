@@ -5,12 +5,12 @@
 
 class Overlay : public QLabel
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    Overlay(QWidget* parent);
+  Overlay(QWidget* parent);
 
 public slots:
-    void show();
+  void show();
 };
 
 #endif // OVERLAY_H

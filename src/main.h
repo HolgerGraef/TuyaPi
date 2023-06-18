@@ -3,6 +3,7 @@
 
 #include <QtAwesome.h>
 
-fa::QtAwesome* awesome();
+fa::QtAwesome*
+awesome();
 
 #endif // MAIN_H

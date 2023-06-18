@@ -2,60 +2,70 @@
 
 #include <QDateTime>
 
-LockScreen::LockScreen(QWidget* parent, BluetoothManager& bluetoothManager, WifiManager& wifiManager)
-    : Overlay(parent), mBluetoothManager(bluetoothManager), mWifiManager(wifiManager)
+LockScreen::LockScreen(QWidget* parent,
+                       BluetoothManager& bluetoothManager,
+                       WifiManager& wifiManager)
+  : Overlay(parent)
+  , mBluetoothManager(bluetoothManager)
+  , mWifiManager(wifiManager)
 {
-    mBackground = new QPixmap("background.png");
+  mBackground = new QPixmap("background.png");
 
-    mInfoOverlay = new Overlay(this);
-    mInfoOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+  mInfoOverlay = new Overlay(this);
+  mInfoOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    mLockTimer.setInterval(5000);
-    mLockTimer.setSingleShot(true);
-    connect(&mLockTimer, SIGNAL(timeout()), this, SLOT(show()));
-    mLockTimer.start();
+  mLockTimer.setInterval(5000);
+  mLockTimer.setSingleShot(true);
+  connect(&mLockTimer, SIGNAL(timeout()), this, SLOT(show()));
+  mLockTimer.start();
 
-    mRefreshTimer.setInterval(1000);
-    connect(&mRefreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
-    mRefreshTimer.start();
+  mRefreshTimer.setInterval(1000);
+  connect(&mRefreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
+  mRefreshTimer.start();
 
-    mUnlockOverlay = new UnlockOverlay(this);
+  mUnlockOverlay = new UnlockOverlay(this);
 
-    refresh();
+  refresh();
 }
 
-void LockScreen::mousePressEvent(QMouseEvent *event)
+void
+LockScreen::mousePressEvent(QMouseEvent* event)
 {
-    (void) event;
-    mUnlockOverlay->start(700);
+  (void)event;
+  mUnlockOverlay->start(700);
 }
 
-void LockScreen::mouseReleaseEvent(QMouseEvent *event)
+void
+LockScreen::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (mUnlockOverlay->isVisible()) {
-        if (mUnlockOverlay->progress() >= 100) {
-            hide();
-            resetLockTimer();
-        }
-        mUnlockOverlay->hide();
+  if (mUnlockOverlay->isVisible()) {
+    if (mUnlockOverlay->progress() >= 100) {
+      hide();
+      resetLockTimer();
     }
+    mUnlockOverlay->hide();
+  }
 }
 
-void LockScreen::resetLockTimer()
+void
+LockScreen::resetLockTimer()
 {
-    mLockTimer.start();
+  mLockTimer.start();
 }
 
-void LockScreen::show()
+void
+LockScreen::show()
 {
-    Overlay::show();
-    mInfoOverlay->show();
-    setPixmap(mBackground->scaled(size(), Qt::KeepAspectRatioByExpanding));
+  Overlay::show();
+  mInfoOverlay->show();
+  setPixmap(mBackground->scaled(size(), Qt::KeepAspectRatioByExpanding));
 }
 
-void LockScreen::refresh()
+void
+LockScreen::refresh()
 {
-    const auto &dateTimeStr = QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm\n")
-            + mWifiManager.iconString() + mBluetoothManager.iconString();
-    mInfoOverlay->setText(dateTimeStr);
+  const auto& dateTimeStr =
+    QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm\n") +
+    mWifiManager.iconString() + mBluetoothManager.iconString();
+  mInfoOverlay->setText(dateTimeStr);
 }
