@@ -155,6 +155,7 @@ void
 BulbWidget::toggle()
 {
   mBtnToggle.setEnabled(false);
+  mBtnToggle.setSpinner();
   mDev->toggle([this](tuya::Device::CommandStatus status, const ordered_json&) {
     if (status == tuya::Device::CMD_OK)
       mBtnToggle.setEnabled(true);
