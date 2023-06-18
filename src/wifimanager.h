@@ -15,7 +15,10 @@ public:
     const QIcon& icon() const;
     QString iconString() const;
 
-public slots:
+signals:
+    void updated();
+
+private slots:
     void refresh();
 
 private:
@@ -27,9 +30,6 @@ private:
     QString mEssid;
     int mSignal;
     QIcon mIcon;
-
-signals:
-    void updated();
 };
 
 #endif // WIFIMANAGER_H

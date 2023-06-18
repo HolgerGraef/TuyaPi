@@ -5,6 +5,7 @@
 
 #include <tuyacpp/bindings/qt.hpp>
 
+#include "bluetoothmanager.h"
 #include "bulbwidget.h"
 #include "lockscreen.h"
 #include "wifimanager.h"
@@ -28,6 +29,7 @@ public slots:
 private:
     LockScreen* mLockScreen;
     std::map<QString, BulbWidget*> mBulbWidgets;
+    BluetoothManager mBluetoothManager;
     WifiManager mWifiManager;
     tuya::TuyaWorker mTuyaWorker;
 };

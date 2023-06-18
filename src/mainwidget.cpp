@@ -1,5 +1,6 @@
 #include "mainwidget.h"
 
+#include "bluetoothwidget.h"
 #include "wifiwidget.h"
 
 #include <QEvent>
@@ -14,7 +15,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     setPixmap(QPixmap("background.png").scaled(size(), Qt::KeepAspectRatioByExpanding));
 
-    mLockScreen = new LockScreen(this, mWifiManager);
+    mLockScreen = new LockScreen(this, mBluetoothManager, mWifiManager);
 
     QHBoxLayout *devLayout = new QHBoxLayout();
     const auto& devices = mTuyaWorker.scanner().knownDevices();
@@ -29,6 +30,7 @@ MainWidget::MainWidget(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->addLayout(devLayout);
     mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    mainLayout->addWidget(new BluetoothWidget(&mBluetoothManager));
     mainLayout->addWidget(new WifiWidget(&mWifiManager));
     setLayout(mainLayout);
 

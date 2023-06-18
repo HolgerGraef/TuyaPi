@@ -2,8 +2,8 @@
 
 #include <QDateTime>
 
-LockScreen::LockScreen(QWidget* parent, WifiManager& wifiManager)
-    : Overlay(parent), mWifiManager(wifiManager)
+LockScreen::LockScreen(QWidget* parent, BluetoothManager& bluetoothManager, WifiManager& wifiManager)
+    : Overlay(parent), mBluetoothManager(bluetoothManager), mWifiManager(wifiManager)
 {
     mBackground = new QPixmap("background.png");
 
@@ -55,6 +55,7 @@ void LockScreen::show()
 
 void LockScreen::refresh()
 {
-    const auto &dateTimeStr = QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm\n") + mWifiManager.iconString();
+    const auto &dateTimeStr = QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm\n")
+            + mWifiManager.iconString() + mBluetoothManager.iconString();
     mInfoOverlay->setText(dateTimeStr);
 }

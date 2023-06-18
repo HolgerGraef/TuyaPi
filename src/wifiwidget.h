@@ -12,10 +12,8 @@ class WifiWidget : public IconButton
 public:
     explicit WifiWidget(WifiManager* manager, QWidget *parent = nullptr);
 
-public slots:
+private slots:
     void refresh();
-
-signals:
 
 private:
     WifiManager* mManager;
