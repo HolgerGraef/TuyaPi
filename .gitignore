@@ -1,4 +1,7 @@
 .vscode/
+build/
 tinytuya/
 venv/
 __pycache__/
+
+TuyaPi.pro.user
