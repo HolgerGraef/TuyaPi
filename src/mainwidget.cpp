@@ -79,7 +79,8 @@ MainWidget::eventFilter(QObject* watched, QEvent* event)
 
 MainWidget::~MainWidget()
 {
-  // TODO: gracefully terminate worker thread
+  mTuyaWorker.stop();
+  mTuyaWorker.wait();
 }
 
 void
