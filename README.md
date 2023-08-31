@@ -1,3 +1,5 @@
+[![CI](https://github.com/hgrf/TuyaPi/actions/workflows/ci.yml/badge.svg)](https://github.com/hgrf/TuyaPi/actions/workflows/ci.yml)
+
 ## Setup
 
 Install Raspberry Pi OS Lite, then:
