@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs: 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install qtxrpi
+      run: |
+        mkdir qtxrpi && cd qtxrpi
+        wget https://raw.githubusercontent.com/hgrf/qtxrpi/v5.15.3-3/Makefile
+        make install
+
+    - name: Build
+      run: |
+        mkdir build && cd build
+        /opt/qtxrpi/qt5.15/bin/qmake ..
+        make -j$(nproc)
