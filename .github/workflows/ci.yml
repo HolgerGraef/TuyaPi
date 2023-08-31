@@ -23,6 +23,7 @@ jobs:
         wget https://raw.githubusercontent.com/hgrf/qtxrpi/v5.15.3-3/Makefile
         make install
 
+    - uses: ammaraskar/gcc-problem-matcher@master
     - name: Build
       run: |
         mkdir build && cd build
