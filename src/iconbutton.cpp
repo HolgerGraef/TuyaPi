@@ -58,8 +58,8 @@ IconButton::setText(const QString& text)
 void
 IconButton::setSpinner()
 {
-    QVariantMap options;
-    options.insert("anim", QVariant::fromValue(&mAnimation));
-    setIcon(awesome()->icon(fa::fa_solid, fa::fa_spinner, options));
-    QPushButton::setText("");
+  QVariantMap options;
+  options.insert("anim", QVariant::fromValue(&mAnimation));
+  setIcon(awesome()->icon(fa::fa_solid, fa::fa_spinner, options));
+  QPushButton::setText("");
 }
