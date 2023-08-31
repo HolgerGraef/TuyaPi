@@ -17,6 +17,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Check coding style
+      run: |
+        sudo apt-get install -y clang-format
+        make codeformat-check
+
     - name: Install qtxrpi
       run: |
         mkdir qtxrpi && cd qtxrpi

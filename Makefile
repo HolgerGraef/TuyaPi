@@ -3,3 +3,9 @@ codeformat:
 	-regex '.*\.\(cpp\|hpp\|cu\|c\|h\)' \
 	-exec \
 		clang-format -style=file -i {} \;
+
+codeformat-check:
+	find src \
+		-regex '.*\.\(cpp\|hpp\|cu\|c\|h\)' \
+		-exec \
+			clang-format -style=file -n --Werror {} \;
