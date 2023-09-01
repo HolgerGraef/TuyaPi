@@ -19,6 +19,61 @@ sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0
 sudo chmod +x /usr/bin/TuyaPi
 ```
 
+### Start X and allow control via SSH
+
+```sh
+# TODO: can we do this without sudo?
+sudo startx &
+sudo DISPLAY=:0 xhost +
+```
+
+### Start application
+
+```sh
+DISPLAY=:0 TuyaPi -platform xcb
+```
+
+### For autostart
+
+Set up automatic login. For instructions, see:
+https://github.com/HolgerGraef/BluePulsePi#set-up-auto-login-so-that-pulseaudio-starts
+
+Add these lines at the end of `/home/pi/.profile`:
+
+```sh
+if ! DISPLAY=:0 timeout 1s xset q &>/dev/null; then
+  startx
+else
+  echo "X is already running :-)"
+fi
+```
+
+Create `/home/pi/.xinitrc` and add the following line in the file:
+
+```sh
+DISPLAY=:0 TuyaPi -platform xcb
+```
+
+### TinyTuya setup
+
+For setup instructions, go to https://pypi.org/project/tinytuya/, section "Setup Wizard - Getting Local Keys".
+Here just an extract:
+
+
+```sh
+pip install tinytuya
+mkdir -p tinytuya && cd tinytuya
+python -m tinytuya wizard
+```
+
+### Timezone setup
+
+e.g.:
+
+```sh
+sudo timedatectl set-timezone Europe/Paris
+```
+
 ## Setup of the custom touchscreen
 
 **NOTE:** HDMI timings are specific to the module.
@@ -37,6 +92,7 @@ max_framebuffer_height=1920
 
 # Enable DRM VC4 V3D driver
 # disabled for touchscreen
+# see https://www.raspberrypi.com/documentation/computers/config_txt.html#display_hdmi_rotate
 # dtoverlay=vc4-kms-v3d
 # max_framebuffers=2
 ```
