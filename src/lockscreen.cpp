@@ -65,7 +65,7 @@ void
 LockScreen::refresh()
 {
   const auto& dateTimeStr =
-    QDateTime::currentDateTime().toString("dd MMMM yyyy\nhh:mm\n") +
+    QDateTime::currentDateTime().toString("dd MMM yyyy\nhh:mm\n") +
     mWifiManager.iconString() + mBluetoothManager.iconString();
   mInfoOverlay->setText(dateTimeStr);
 }
