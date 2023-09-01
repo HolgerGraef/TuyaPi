@@ -54,6 +54,10 @@ Create `/home/pi/.xinitrc` and add the following line in the file:
 DISPLAY=:0 TuyaPi -platform xcb
 ```
 
+### Background setup
+
+Add a file `background.png` in the home folder.
+
 ### TinyTuya setup
 
 For setup instructions, go to https://pypi.org/project/tinytuya/, section "Setup Wizard - Getting Local Keys".
@@ -61,7 +65,9 @@ Here just an extract:
 
 
 ```sh
+sudo apt install python3-pip
 pip install tinytuya
+cd ~
 mkdir -p tinytuya && cd tinytuya
 python -m tinytuya wizard
 ```
