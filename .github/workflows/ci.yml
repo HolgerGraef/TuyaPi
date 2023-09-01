@@ -34,3 +34,9 @@ jobs:
         mkdir build && cd build
         /opt/qtxrpi/qt5.15/bin/qmake ..
         make -j$(nproc)
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: TuyaPi
+        path: build/TuyaPi
