@@ -2,17 +2,26 @@
 
 ## Setup
 
-Install Raspberry Pi OS Lite, then:
+Download and set up the 64-bit version of Raspberry Pi OS Lite on your Raspberry Pi 4. The
+following was tested with
+[this version](https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-05-03/2023-05-03-raspios-bullseye-arm64-lite.img.xz).
+
+### Install latest TuyaPi build
 
 ```sh
-sudo apt install python3-pyqt5 python3-venv xorg
-
-git clone https://github.com/HolgerGraef/TuyaPi.git
-cd TuyaPi
-python3 -m venv --system-site-packages venv
-. venv/bin/activate
-pip install tinytuya qtawesome
+sudo apt install xorg libgles2-mesa libharfbuzz0b libmd4c0 libdouble-conversion3 \
+        libpcre2-16-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 \
+        libxcb-xinerama0 libxcb-xkb1 libxcb-xinput0 libxkbcommon0 libxkbcommon-x11-0
+wget -O - "https://github.com/hgrf/qtxrpi/releases/download/v5.15.3-3/qt5.15.tar.gz" | sudo tar -C / -xz
+echo /opt/qtxrpi/qt5.15/lib | sudo tee /etc/ld.so.conf.d/qt5.15.conf
+sudo ldconfig
+sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0.1.0/TuyaPi
+sudo chmod +x /usr/bin/TuyaPi
 ```
+
+## Setup of the custom touchscreen
+
+**NOTE:** HDMI timings are specific to the module.
 
 ### /boot/config.txt
 
@@ -44,53 +53,6 @@ Section "InputClass"
         Option "TransformationMatrix" "0 -1 1 1 0 0 0 0 1"
 EndSection
 ...
-```
-
-## Start X and allow control via SSH
-
-```sh
-# TODO: can we do this without sudo?
-sudo startx &
-sudo DISPLAY=:0 xhost +
-```
-
-## Start application
-
-```sh
-DISPLAY=:0 python main.py
-```
-
-## For autostart
-
-Set up automatic login. For instructions, see:
-https://github.com/HolgerGraef/BluePulsePi#set-up-auto-login-so-that-pulseaudio-starts
-
-Add these lines at the end of `/home/pi/.profile`:
-
-```sh
-if ! DISPLAY=:0 timeout 1s xset q &>/dev/null; then
-  startx
-else
-  echo "X is already running :-)"
-fi
-```
-
-Create `/home/pi/.xinitrc` and add the following line in the file:
-
-```sh
-cd /home/pi/TuyaPi && . venv/bin/activate && DISPLAY=:0 python main.py
-```
-
-## TinyTuya setup
-
-For setup instructions, go to https://pypi.org/project/tinytuya/, section "Setup Wizard - Getting Local Keys".
-Here just an extract:
-
-### Using Tuya wizard
-
-```sh
-mkdir -p tinytuya && cd tinytuya
-python -m tinytuya wizard
 ```
 
 ## References
