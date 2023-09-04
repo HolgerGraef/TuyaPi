@@ -26,6 +26,8 @@ public:
 
 signals:
   void valueChanged(int);
+  void sliderPressed();
+  void sliderReleased();
 
 private:
   IconButton mCloseButton;
@@ -49,6 +51,8 @@ public slots:
   void setColorTemp(int value);
   void setNextBrightnessValue();
   void setNextColortempValue();
+  void sliderPressed();
+  void sliderReleased();
 
 private:
   std::shared_ptr<tuya::Device> mDev;
@@ -60,6 +64,7 @@ private:
   std::unique_ptr<SliderOverlay> mColorTempOverlay;
 
   bool mDevIsBusy;
+  std::atomic_bool mSliderIsActive;
   int mNextBrightnessValue;
   QTimer mSetBrightnessTimer;
   int mNextColorTempValue;

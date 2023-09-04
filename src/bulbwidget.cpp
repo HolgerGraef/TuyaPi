@@ -38,6 +38,8 @@ SliderOverlay::SliderOverlay(QWidget* parent, QString label)
   setLayout(layout);
 
   connect(&mSlider, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
+  connect(&mSlider, SIGNAL(sliderPressed()), this, SIGNAL(sliderPressed()));
+  connect(&mSlider, SIGNAL(sliderReleased()), this, SIGNAL(sliderReleased()));
   connect(&mCloseButton, SIGNAL(clicked()), this, SLOT(hide()));
 }
 
@@ -56,6 +58,7 @@ BulbWidget::BulbWidget(QWidget* parent, std::shared_ptr<tuya::Device> dev)
   , mColorTempOverlay(
       std::make_unique<SliderOverlay>(parent,
                                       QString::fromStdString(dev->name())))
+  , mSliderIsActive(false)
 {
   QVBoxLayout* layout = new QVBoxLayout();
 
@@ -99,12 +102,31 @@ BulbWidget::BulbWidget(QWidget* parent, std::shared_ptr<tuya::Device> dev)
           SIGNAL(valueChanged(int)),
           this,
           SLOT(setBrightness(int)));
+  connect(mBrightnessOverlay.get(),
+          SIGNAL(sliderPressed()),
+          this,
+          SLOT(sliderPressed()));
+
+  connect(mBrightnessOverlay.get(),
+          SIGNAL(sliderReleased()),
+          this,
+          SLOT(sliderReleased()));
+
   connect(
     &mBtnColorTemp, SIGNAL(clicked()), mColorTempOverlay.get(), SLOT(show()));
   connect(mColorTempOverlay.get(),
           SIGNAL(valueChanged(int)),
           this,
           SLOT(setColorTemp(int)));
+    connect(mColorTempOverlay.get(),
+          SIGNAL(sliderPressed()),
+          this,
+          SLOT(sliderPressed()));
+
+  connect(mColorTempOverlay.get(),
+          SIGNAL(sliderReleased()),
+          this,
+          SLOT(sliderReleased()));
 }
 
 void
@@ -138,14 +160,16 @@ BulbWidget::handleData(const QString& ip, const QJsonDocument& data)
       int brightness7 =
         data.object()["brightness"].toInt() * 7 / mDev->brightnessScale();
       mBtnBrightness.setIcon(fa::mdi6_circle_slice_1 + brightness7);
-      mBrightnessOverlay->setSliderValue(data.object()["brightness"].toInt() *
+      if (!mSliderIsActive)
+        mBrightnessOverlay->setSliderValue(data.object()["brightness"].toInt() *
                                          100 / mDev->brightnessScale());
     }
     if (data.object().contains("colourtemp")) {
       int colortemp7 =
         data.object()["colourtemp"].toInt() * 7 / mDev->colorTempScale();
       mBtnColorTemp.setIcon(fa::mdi6_circle_slice_1 + colortemp7);
-      mColorTempOverlay->setSliderValue(data.object()["colourtemp"].toInt() *
+      if (!mSliderIsActive)
+        mColorTempOverlay->setSliderValue(data.object()["colourtemp"].toInt() *
                                         100 / mDev->colorTempScale());
     }
   }
@@ -191,6 +215,18 @@ BulbWidget::setBrightness(int value)
     mNextBrightnessValue = value;
     mSetBrightnessTimer.start();
   }
+}
+
+void
+BulbWidget::sliderPressed()
+{
+    mSliderIsActive = true;
+}
+
+void
+BulbWidget::sliderReleased()
+{
+    mSliderIsActive = false;
 }
 
 void
