@@ -118,7 +118,7 @@ BulbWidget::BulbWidget(QWidget* parent, std::shared_ptr<tuya::Device> dev)
           SIGNAL(valueChanged(int)),
           this,
           SLOT(setColorTemp(int)));
-    connect(mColorTempOverlay.get(),
+  connect(mColorTempOverlay.get(),
           SIGNAL(sliderPressed()),
           this,
           SLOT(sliderPressed()));
@@ -162,7 +162,7 @@ BulbWidget::handleData(const QString& ip, const QJsonDocument& data)
       mBtnBrightness.setIcon(fa::mdi6_circle_slice_1 + brightness7);
       if (!mSliderIsActive)
         mBrightnessOverlay->setSliderValue(data.object()["brightness"].toInt() *
-                                         100 / mDev->brightnessScale());
+                                           100 / mDev->brightnessScale());
     }
     if (data.object().contains("colourtemp")) {
       int colortemp7 =
@@ -170,7 +170,7 @@ BulbWidget::handleData(const QString& ip, const QJsonDocument& data)
       mBtnColorTemp.setIcon(fa::mdi6_circle_slice_1 + colortemp7);
       if (!mSliderIsActive)
         mColorTempOverlay->setSliderValue(data.object()["colourtemp"].toInt() *
-                                        100 / mDev->colorTempScale());
+                                          100 / mDev->colorTempScale());
     }
   }
 }
@@ -220,13 +220,13 @@ BulbWidget::setBrightness(int value)
 void
 BulbWidget::sliderPressed()
 {
-    mSliderIsActive = true;
+  mSliderIsActive = true;
 }
 
 void
 BulbWidget::sliderReleased()
 {
-    mSliderIsActive = false;
+  mSliderIsActive = false;
 }
 
 void
