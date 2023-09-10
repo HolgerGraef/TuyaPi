@@ -202,7 +202,7 @@ BulbWidget::setBrightness(int value)
   mNextBrightnessValue = value;
   int ret =
     mDev->setBrightness(value * mDev->brightnessScale() / 100,
-                        [this, value](tuya::Device::CommandStatus status,
+                        [this](tuya::Device::CommandStatus status,
                                       const ordered_json& data) {
                           (void)status;
                           (void)data;
@@ -244,7 +244,7 @@ BulbWidget::setColorTemp(int value)
   mDevIsBusy = true;
   mNextColorTempValue = value;
   int ret = mDev->setColorTemp(value * mDev->colorTempScale() / 100,
-                               [this, value](tuya::Device::CommandStatus status,
+                               [this](tuya::Device::CommandStatus status,
                                              const ordered_json& data) {
                                  (void)status;
                                  (void)data;
