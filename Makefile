@@ -1,9 +1,11 @@
+.PHONY: codeformat
 codeformat:
 	find src \
 	-regex '.*\.\(cpp\|hpp\|cu\|c\|h\)' \
 	-exec \
 		clang-format -style=file -i {} \;
 
+.PHONY: codeformat-check
 codeformat-check:
 	rm -f clang-format-error
 	find src \
