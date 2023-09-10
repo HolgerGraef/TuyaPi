@@ -28,6 +28,7 @@ private:
 
   QPixmap* mBackground;
   Overlay* mInfoOverlay;
+  QLabel* mVersionLabel;
   QTimer mLockTimer;
   QTimer mRefreshTimer;
 

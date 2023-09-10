@@ -2,6 +2,8 @@
 
 #include <QDateTime>
 
+#include "version.h"
+
 LockScreen::LockScreen(QWidget* parent,
                        BluetoothManager& bluetoothManager,
                        WifiManager& wifiManager)
@@ -22,6 +24,12 @@ LockScreen::LockScreen(QWidget* parent,
   mRefreshTimer.setInterval(1000);
   connect(&mRefreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
   mRefreshTimer.start();
+
+  mVersionLabel = new QLabel(mInfoOverlay);
+  mVersionLabel->setText(getVersionString().c_str());
+  mVersionLabel->setStyleSheet("QLabel { background: rgba(0,0,0,0%); color: "
+                               "#CCCCCC; font-size: 20px; padding: 0px; }");
+  mVersionLabel->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
   mUnlockOverlay = new UnlockOverlay(this);
 
@@ -60,6 +68,7 @@ LockScreen::show()
   if (!isVisible()) {
     Overlay::show();
     mInfoOverlay->show();
+    mVersionLabel->resize(parentWidget()->size());
     setPixmap(mBackground->scaled(size(), Qt::KeepAspectRatioByExpanding));
   }
 }
