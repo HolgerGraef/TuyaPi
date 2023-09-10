@@ -58,6 +58,32 @@ DISPLAY=:0 TuyaPi -platform xcb
 
 Add a file `background.png` in the home folder.
 
+### Splashscreen setup
+
+```sh
+sudo apt install fbi
+sudo su
+cat <<EOF > /etc/systemd/system/splashscreen.service
+[Unit]
+Description=Splash screen
+DefaultDependencies=no
+After=local-fs.target
+
+[Service]
+ExecStart=/usr/bin/fbi -d /dev/fb0 --noverbose -a /home/pi/background.png
+StandardInput=tty
+StandardOutput=tty
+
+[Install]
+WantedBy=sysinit.target
+EOF
+systemctl enable splashscreen
+```
+
+Add `disable_splash=1` in `/boot/config.txt`.
+
+Add `logo.nologo` to `/boot/cmdline.txt`.
+
 ### TinyTuya setup
 
 For setup instructions, go to https://pypi.org/project/tinytuya/, section "Setup Wizard - Getting Local Keys".
@@ -127,3 +153,6 @@ EndSection
 - https://github.com/codetheweb/tuyapi
 - https://www.cnx-software.com/2021/12/13/blink-an-led-on-esp32-board-with-tuya-link-sdk/
 - https://github.com/spyder-ide/qtawesome#supported-fonts
+- https://eskimon.fr/ajouter-un-splash-screen-de-boot-sur-sa-raspberrypi
+- https://raspberrypi.stackexchange.com/a/3488
+- https://yingtongli.me/blog/2016/12/21/splash.html
