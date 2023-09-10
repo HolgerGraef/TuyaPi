@@ -4,4 +4,5 @@ tinytuya/
 venv/
 __pycache__/
 
+background.png
 TuyaPi.pro.user
