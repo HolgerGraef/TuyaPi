@@ -15,7 +15,7 @@ sudo apt install xorg libgles2-mesa libharfbuzz0b libmd4c0 libdouble-conversion3
 wget -O - "https://github.com/hgrf/qtxrpi/releases/download/v5.15.3-3/qt5.15.tar.gz" | sudo tar -C / -xz
 echo /opt/qtxrpi/qt5.15/lib | sudo tee /etc/ld.so.conf.d/qt5.15.conf
 sudo ldconfig
-sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0.1.2/TuyaPi
+sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0.1.3/TuyaPi
 sudo chmod +x /usr/bin/TuyaPi
 ```
 

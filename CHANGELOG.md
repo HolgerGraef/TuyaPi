@@ -1,3 +1,9 @@
+# v0.1.3
+
+* use sliderMoved instead of valueChanged
+* update tuyacpp (limit brightness value to >= 25 for some devices)
+* update README, .gitignore and project file
+
 # v0.1.2
 
 * improve slider behavior
