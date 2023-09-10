@@ -79,6 +79,10 @@ MainWidget::eventFilter(QObject* watched, QEvent* event)
 
 MainWidget::~MainWidget()
 {
+  for (auto& bulb : mBulbWidgets)
+    delete bulb.second;
+  mBulbWidgets.clear();
+
   mTuyaWorker.stop();
   mTuyaWorker.wait();
 }
