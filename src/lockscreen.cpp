@@ -38,6 +38,7 @@ LockScreen::mousePressEvent(QMouseEvent* event)
 void
 LockScreen::mouseReleaseEvent(QMouseEvent* event)
 {
+  (void)event;
   if (mUnlockOverlay->isVisible()) {
     if (mUnlockOverlay->progress() >= 100) {
       hide();
