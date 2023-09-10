@@ -36,6 +36,7 @@ HEADERS += \
     src/mainwidget.h \
     src/overlay.h \
     src/unlockoverlay.h \
+    src/version.h \
     src/wifimanager.h \
     src/wifiwidget.h \
     src/bulbwidget.h
