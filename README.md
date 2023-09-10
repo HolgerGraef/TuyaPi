@@ -1,4 +1,5 @@
 [![CI](https://github.com/hgrf/TuyaPi/actions/workflows/ci.yml/badge.svg)](https://github.com/hgrf/TuyaPi/actions/workflows/ci.yml)
+[![Coverity](https://scan.coverity.com/projects/29049/badge.svg)](https://scan.coverity.com/projects/hgrf-tuyapi)
 
 ## Setup
 
