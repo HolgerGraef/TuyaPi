@@ -143,6 +143,14 @@ EndSection
 ...
 ```
 
+## Release instructions
+
+* update version number in `src/version.h`
+* update version number in installation instructions above
+* update changelog
+* add release commit and tag it
+* once pipeline has finished, update release notes on GitHub
+
 ## References
 
 - https://learn.adafruit.com/using-weird-displays-with-raspberry-pi/everything-else
