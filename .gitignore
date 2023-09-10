@@ -1,5 +1,6 @@
 .vscode/
 build/
+build.tar.gz
 tinytuya/
 venv/
 __pycache__/

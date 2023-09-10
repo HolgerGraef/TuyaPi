@@ -149,6 +149,8 @@ EndSection
 * make sure the code format is respected with `make codeformat`
 * update version number in `src/version.h`
 * update version number in installation instructions above
+* update version number in `Makefile`, target `coverity`
+* `EMAIL=<EMAIL> TOKEN=<TOKEN> make coverity`
 * update changelog
 * add release commit and tag it
 * once pipeline has finished, update release notes on GitHub
