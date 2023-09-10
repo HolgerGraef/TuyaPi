@@ -25,8 +25,12 @@ public slots:
   void deviceDiscovered(QString ip);
   void newDeviceData(QString ip, QJsonDocument data);
 
+  void hideMouse();
+
 private:
   LockScreen* mLockScreen;
+  QCursor mCursor;
+  QTimer mMouseHideTimer;
   std::map<QString, BulbWidget*> mBulbWidgets;
   BluetoothManager mBluetoothManager;
   WifiManager mWifiManager;

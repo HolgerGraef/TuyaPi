@@ -1,11 +1,14 @@
 #include "mainwidget.h"
 
+#include <QBitmap>
 #include <QEvent>
 #include <QSpacerItem>
 #include <QVBoxLayout>
 
 #include "bluetoothwidget.h"
 #include "wifiwidget.h"
+
+#include "main.h"
 
 MainWidget::MainWidget(QWidget* parent)
   : QLabel(parent)
@@ -15,6 +18,17 @@ MainWidget::MainWidget(QWidget* parent)
 
   setPixmap(
     QPixmap("background.png").scaled(size(), Qt::KeepAspectRatioByExpanding));
+
+  auto pm = awesome()->icon(fa::mdi6, fa::mdi6_circle_slice_8).pixmap(150, 150);
+  QPixmap pmMasked(pm.size());
+  pmMasked.fill(Qt::lightGray);
+  pmMasked.setMask(pm.createMaskFromColor(Qt::transparent));
+  mCursor = QCursor(pmMasked, -1, -1);
+  setCursor(mCursor);
+
+  connect(&mMouseHideTimer, SIGNAL(timeout()), this, SLOT(hideMouse()));
+  mMouseHideTimer.setInterval(1000);
+  mMouseHideTimer.start();
 
   mLockScreen = new LockScreen(this, mBluetoothManager, mWifiManager);
 
@@ -68,9 +82,20 @@ MainWidget::MainWidget(QWidget* parent)
 bool
 MainWidget::eventFilter(QObject* watched, QEvent* event)
 {
-  if ((event->type() == QEvent::MouseButtonPress) ||
-      (event->type() == QEvent::MouseMove)) {
+  if (event->type() == QEvent::MouseButtonPress) {
+    setCursor(mCursor);
+    mMouseHideTimer.stop();
     mLockScreen->resetLockTimer();
+    return false;
+  } else if (event->type() == QEvent::MouseMove) {
+    mLockScreen->resetLockTimer();
+    setCursor(mCursor);
+    mMouseHideTimer.start();
+    return false;
+  } else if (event->type() == QEvent::MouseButtonRelease) {
+    mLockScreen->resetLockTimer();
+    setCursor(mCursor);
+    mMouseHideTimer.start();
     return false;
   } else {
     return QLabel::eventFilter(watched, event);
@@ -115,4 +140,11 @@ MainWidget::newDeviceData(QString ip, QJsonDocument data)
   auto bulb = mBulbWidgets.find(ip);
   if (bulb != mBulbWidgets.end())
     bulb->second->handleData(ip, data);
+}
+
+void
+MainWidget::hideMouse()
+{
+  mMouseHideTimer.stop();
+  setCursor(Qt::BlankCursor);
 }
