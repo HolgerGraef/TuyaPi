@@ -63,7 +63,7 @@ private:
   IconButton mBtnColorTemp;
   std::unique_ptr<SliderOverlay> mColorTempOverlay;
 
-  bool mDevIsBusy;
+  std::atomic_bool mDevIsBusy;
   std::atomic_bool mSliderIsActive;
   int mNextBrightnessValue;
   QTimer mSetBrightnessTimer;
