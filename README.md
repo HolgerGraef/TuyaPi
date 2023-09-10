@@ -145,6 +145,7 @@ EndSection
 
 ## Release instructions
 
+* make sure the code format is respected with `make codeformat`
 * update version number in `src/version.h`
 * update version number in installation instructions above
 * update changelog
