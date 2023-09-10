@@ -208,7 +208,6 @@ BulbWidget::setBrightness(int value)
                           (void)data;
                           mDevIsBusy = false;
                           if (status != tuya::Device::CMD_OK)
-                            
                             mSetBrightnessTimer.start();
                         });
   if (ret != 0)

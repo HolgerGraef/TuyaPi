@@ -57,9 +57,11 @@ LockScreen::resetLockTimer()
 void
 LockScreen::show()
 {
-  Overlay::show();
-  mInfoOverlay->show();
-  setPixmap(mBackground->scaled(size(), Qt::KeepAspectRatioByExpanding));
+  if (!isVisible()) {
+    Overlay::show();
+    mInfoOverlay->show();
+    setPixmap(mBackground->scaled(size(), Qt::KeepAspectRatioByExpanding));
+  }
 }
 
 void
