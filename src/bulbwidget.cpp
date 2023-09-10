@@ -200,16 +200,15 @@ BulbWidget::setBrightness(int value)
 
   mDevIsBusy = true;
   mNextBrightnessValue = value;
-  int ret =
-    mDev->setBrightness(value * mDev->brightnessScale() / 100,
-                        [this](tuya::Device::CommandStatus status,
-                                      const ordered_json& data) {
-                          (void)status;
-                          (void)data;
-                          mDevIsBusy = false;
-                          if (status != tuya::Device::CMD_OK)
-                            mSetBrightnessTimer.start();
-                        });
+  int ret = mDev->setBrightness(
+    value * mDev->brightnessScale() / 100,
+    [this](tuya::Device::CommandStatus status, const ordered_json& data) {
+      (void)status;
+      (void)data;
+      mDevIsBusy = false;
+      if (status != tuya::Device::CMD_OK)
+        mSetBrightnessTimer.start();
+    });
   if (ret != 0)
     mSetBrightnessTimer.start();
 }
@@ -243,15 +242,15 @@ BulbWidget::setColorTemp(int value)
 
   mDevIsBusy = true;
   mNextColorTempValue = value;
-  int ret = mDev->setColorTemp(value * mDev->colorTempScale() / 100,
-                               [this](tuya::Device::CommandStatus status,
-                                             const ordered_json& data) {
-                                 (void)status;
-                                 (void)data;
-                                 mDevIsBusy = false;
-                                 if (status != tuya::Device::CMD_OK)
-                                   mSetColorTempTimer.start();
-                               });
+  int ret = mDev->setColorTemp(
+    value * mDev->colorTempScale() / 100,
+    [this](tuya::Device::CommandStatus status, const ordered_json& data) {
+      (void)status;
+      (void)data;
+      mDevIsBusy = false;
+      if (status != tuya::Device::CMD_OK)
+        mSetColorTempTimer.start();
+    });
   if (ret != 0)
     mSetColorTempTimer.start();
 }
