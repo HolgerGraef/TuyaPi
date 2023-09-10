@@ -37,7 +37,7 @@ SliderOverlay::SliderOverlay(QWidget* parent, QString label)
 
   setLayout(layout);
 
-  connect(&mSlider, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
+  connect(&mSlider, SIGNAL(sliderMoved(int)), this, SIGNAL(valueChanged(int)));
   connect(&mSlider, SIGNAL(sliderPressed()), this, SIGNAL(sliderPressed()));
   connect(&mSlider, SIGNAL(sliderReleased()), this, SIGNAL(sliderReleased()));
   connect(&mCloseButton, SIGNAL(clicked()), this, SLOT(hide()));
