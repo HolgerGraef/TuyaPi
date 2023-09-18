@@ -9,7 +9,7 @@ on:
 jobs:
   build-project:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
@@ -29,8 +29,15 @@ jobs:
         make install
 
     - uses: ammaraskar/gcc-problem-matcher@master
-    - name: Build
+    - name: Build (qtxrpi)
       run: |
-        mkdir build && cd build
+        mkdir build-qtxrpi && cd build-qtxrpi
         /opt/qtxrpi/qt5.15/bin/qmake ..
+        make -j$(nproc)
+
+    - name: Build (desktop)
+      run: |
+        sudo apt-get install -y qt5-qmake
+        mkdir build-desktop && cd build-desktop
+        qmake ..
         make -j$(nproc)
