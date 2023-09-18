@@ -5,9 +5,9 @@
 
 UnlockOverlay::UnlockOverlay(QWidget* parent)
   : Overlay(parent)
+  , mDiameter(DEFAULT_DIAMETER)
+  , mDurationMs(DEFAULT_DURATION_MS)
 {
-  mDiameter = 600;
-
   mTimer.setInterval(33);
   connect(&mTimer, SIGNAL(timeout()), this, SLOT(repaint()));
 }
@@ -37,7 +37,7 @@ void
 UnlockOverlay::start(unsigned int durationMs)
 {
   mStartTimeMs = QDateTime::currentMSecsSinceEpoch();
-  mDurationMs = durationMs;
+  mDurationMs = durationMs ? durationMs : DEFAULT_DURATION_MS;
   mTimer.start();
   show();
 }

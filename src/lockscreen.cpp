@@ -40,7 +40,7 @@ void
 LockScreen::mousePressEvent(QMouseEvent* event)
 {
   (void)event;
-  mUnlockOverlay->start(700);
+  mUnlockOverlay->start();
 }
 
 void

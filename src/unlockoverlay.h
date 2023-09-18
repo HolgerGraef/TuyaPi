@@ -13,7 +13,10 @@ public:
 
   virtual void paintEvent(QPaintEvent* event) override;
   unsigned progress();
-  void start(unsigned durationMs);
+  void start(unsigned durationMs = DEFAULT_DURATION_MS);
+
+  static const unsigned int DEFAULT_DURATION_MS = 700;
+  static const unsigned int DEFAULT_DIAMETER = 600;
 
 private:
   QTimer mTimer;
