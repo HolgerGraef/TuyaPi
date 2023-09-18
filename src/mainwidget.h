@@ -2,6 +2,8 @@
 #define MAINWIDGET_H
 
 #include <QLabel>
+#include <QMenu>
+#include <QSystemTrayIcon>
 #include <tuyacpp/bindings/qt.hpp>
 
 #include "bluetoothmanager.h"
@@ -14,7 +16,7 @@ class MainWidget : public QLabel
   Q_OBJECT
 
 public:
-  MainWidget(QWidget* parent = nullptr);
+  MainWidget(bool isDesktop = false, QWidget* parent = nullptr);
   ~MainWidget();
 
   virtual bool eventFilter(QObject* watched, QEvent* event) override;
@@ -28,6 +30,11 @@ public slots:
   void hideMouse();
 
 private:
+  QAction* mQuitAction;
+
+  QSystemTrayIcon* mTrayIcon;
+  QMenu* mTrayIconMenu;
+
   LockScreen* mLockScreen;
   QCursor mCursor;
   QTimer mMouseHideTimer;

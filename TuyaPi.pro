@@ -41,6 +41,12 @@ HEADERS += \
     src/wifiwidget.h \
     src/bulbwidget.h
 
+linux-g++ {
+!build_pass:message(building for desktop)
+DEFINES += TUYAPI_IS_DESKTOP
+QMAKE_CXXFLAGS += -DTUYAPI_IS_DESKTOP
+}
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

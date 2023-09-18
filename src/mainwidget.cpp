@@ -1,5 +1,6 @@
 #include "mainwidget.h"
 
+#include <QApplication>
 #include <QBitmap>
 #include <QEvent>
 #include <QSpacerItem>
@@ -10,27 +11,51 @@
 
 #include "main.h"
 
-MainWidget::MainWidget(QWidget* parent)
+MainWidget::MainWidget(bool isDesktop, QWidget* parent)
   : QLabel(parent)
 {
-  setGeometry(0, 0, 1920, 1080);
-  setStyleSheet("QWidget { font-size: 42pt; }");
+  if (!isDesktop) {
+    setGeometry(0, 0, 1920, 1080);
+    setStyleSheet("QWidget { font-size: 42pt; }");
 
-  setPixmap(
-    QPixmap("background.png").scaled(size(), Qt::KeepAspectRatioByExpanding));
+    setPixmap(
+      QPixmap("background.png").scaled(size(), Qt::KeepAspectRatioByExpanding));
 
-  auto pm = awesome()->icon(fa::mdi6, fa::mdi6_circle_slice_8).pixmap(150, 150);
-  QPixmap pmMasked(pm.size());
-  pmMasked.fill(Qt::lightGray);
-  pmMasked.setMask(pm.createMaskFromColor(Qt::transparent));
-  mCursor = QCursor(pmMasked, -1, -1);
-  setCursor(mCursor);
+    auto pm =
+      awesome()->icon(fa::mdi6, fa::mdi6_circle_slice_8).pixmap(150, 150);
+    QPixmap pmMasked(pm.size());
+    pmMasked.fill(Qt::lightGray);
+    pmMasked.setMask(pm.createMaskFromColor(Qt::transparent));
+    mCursor = QCursor(pmMasked, -1, -1);
+    setCursor(mCursor);
 
-  connect(&mMouseHideTimer, SIGNAL(timeout()), this, SLOT(hideMouse()));
-  mMouseHideTimer.setInterval(1000);
-  mMouseHideTimer.start();
+    connect(&mMouseHideTimer, SIGNAL(timeout()), this, SLOT(hideMouse()));
+    mMouseHideTimer.setInterval(1000);
+    mMouseHideTimer.start();
 
-  mLockScreen = new LockScreen(this, mBluetoothManager, mWifiManager);
+    mLockScreen = new LockScreen(this, mBluetoothManager, mWifiManager);
+  } else {
+    setGeometry(0, 0, 800, 600);
+
+    mQuitAction = new QAction(tr("&Quit"), this);
+    connect(mQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+    mTrayIconMenu = new QMenu(this);
+    mTrayIconMenu->addSeparator();
+    mTrayIconMenu->addAction(mQuitAction);
+
+    mTrayIcon = new QSystemTrayIcon(this);
+    mTrayIcon->setContextMenu(mTrayIconMenu);
+
+    auto pm = awesome()->icon(fa::mdi6, fa::mdi6_home).pixmap(150, 150);
+    QPixmap pmMasked(pm.size());
+    pmMasked.fill(Qt::lightGray);
+    pmMasked.setMask(pm.createMaskFromColor(Qt::transparent));
+
+    mTrayIcon->setIcon(pmMasked);
+    setWindowIcon(pmMasked);
+
+    mTrayIcon->show();
+  }
 
   QHBoxLayout* devLayout = new QHBoxLayout();
   const auto& devices = mTuyaWorker.scanner().knownDevices();
@@ -45,10 +70,12 @@ MainWidget::MainWidget(QWidget* parent)
 
   QVBoxLayout* mainLayout = new QVBoxLayout();
   mainLayout->addLayout(devLayout);
-  mainLayout->addSpacerItem(
-    new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
-  mainLayout->addWidget(new BluetoothWidget(&mBluetoothManager));
-  mainLayout->addWidget(new WifiWidget(&mWifiManager));
+  if (!isDesktop) {
+    mainLayout->addSpacerItem(
+      new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    mainLayout->addWidget(new BluetoothWidget(&mBluetoothManager));
+    mainLayout->addWidget(new WifiWidget(&mWifiManager));
+  }
   setLayout(mainLayout);
 
   connect(&mTuyaWorker,

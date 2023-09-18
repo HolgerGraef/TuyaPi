@@ -4,6 +4,10 @@
 
 #include "mainwidget.h"
 
+#if !defined(TUYAPI_IS_DESKTOP)
+#define TUYAPI_IS_DESKTOP 0
+#endif
+
 static fa::QtAwesome* mAwesome = nullptr;
 
 static void
@@ -25,7 +29,7 @@ main(int argc, char* argv[])
   QApplication a(argc, argv);
 
   makeQtAwesome();
-  MainWidget w;
+  MainWidget w(TUYAPI_IS_DESKTOP);
   w.show();
   return a.exec();
 }
