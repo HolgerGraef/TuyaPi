@@ -1,3 +1,9 @@
+# v0.2.0
+
+* add Desktop version
+* correct submodule URL
+* fix segfault on exit
+
 # v0.1.3
 
 * use sliderMoved instead of valueChanged

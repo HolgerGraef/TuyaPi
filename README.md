@@ -3,11 +3,22 @@
 
 ## Setup
 
+### Install latest TuyaPi build
+
+#### On Desktop
+
+The desktop version is built with Ubuntu 22.04 and should work on that distribution.
+
+```sh
+sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0.2.0/TuyaPi-desktop
+sudo chmod +x /usr/bin/TuyaPi
+```
+
+#### On Raspberry Pi 4
+
 Download and set up the 64-bit version of Raspberry Pi OS Lite on your Raspberry Pi 4. The
 following was tested with
 [this version](https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-05-03/2023-05-03-raspios-bullseye-arm64-lite.img.xz).
-
-### Install latest TuyaPi build
 
 ```sh
 sudo apt install xorg libgles2-mesa libharfbuzz0b libmd4c0 libdouble-conversion3 \
@@ -16,7 +27,7 @@ sudo apt install xorg libgles2-mesa libharfbuzz0b libmd4c0 libdouble-conversion3
 wget -O - "https://github.com/hgrf/qtxrpi/releases/download/v5.15.3-3/qt5.15.tar.gz" | sudo tar -C / -xz
 echo /opt/qtxrpi/qt5.15/lib | sudo tee /etc/ld.so.conf.d/qt5.15.conf
 sudo ldconfig
-sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0.1.3/TuyaPi
+sudo wget -O /usr/bin/TuyaPi https://github.com/hgrf/TuyaPi/releases/download/v0.2.0/TuyaPi-rpi4
 sudo chmod +x /usr/bin/TuyaPi
 ```
 

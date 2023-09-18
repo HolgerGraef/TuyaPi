@@ -40,6 +40,6 @@ coverity:
 	curl --form token=${TOKEN} \
 		--form email=${EMAIL} \
 		--form file=@build.tar.gz \
-		--form version="v0.1.3" \
+		--form version="v0.2.0" \
 		--form description="TuyaPi - Home Automation with Tuya and Raspberry Pi" \
 		https://scan.coverity.com/builds?project=hgrf%2FTuyaPi
