@@ -97,12 +97,14 @@ MainWidget::MainWidget(bool isDesktop, QWidget* parent)
           SLOT(deviceDisconnected(QString)));
   mTuyaWorker.start();
 
-  installEventFilter(this);
-  auto childrenList = children();
-  while (childrenList.length()) {
-    auto c = childrenList.takeFirst();
-    c->installEventFilter(this);
-    childrenList += c->children();
+  if (!isDesktop) {
+    installEventFilter(this);
+    auto childrenList = children();
+    while (childrenList.length()) {
+      auto c = childrenList.takeFirst();
+      c->installEventFilter(this);
+      childrenList += c->children();
+    }
   }
 }
 
