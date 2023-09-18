@@ -33,7 +33,7 @@ jobs:
         mkdir build-qtxrpi && cd build-qtxrpi
         /opt/qtxrpi/qt5.15/bin/qmake ..
         make -j$(nproc)
-        mv build-qtxrpi/TuyaPi TuyaPi-rpi4
+        mv TuyaPi ../TuyaPi-rpi4
 
     - name: Build (desktop)
       run: |
@@ -41,7 +41,7 @@ jobs:
         mkdir build-desktop && cd build-desktop
         qmake ..
         make -j$(nproc)
-        mv build-desktop/TuyaPi TuyaPi-desktop
+        mv TuyaPi ../TuyaPi-desktop
 
     - name: Release
       uses: softprops/action-gh-release@v1
