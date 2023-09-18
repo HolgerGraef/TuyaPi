@@ -37,7 +37,7 @@ jobs:
 
     - name: Build (desktop)
       run: |
-        sudo apt-get install -y qtbase5-dev qt5-qmake libqt5gui5 libqt5widgets5 libqt5bluetooth5
+        sudo apt-get install -y qtbase5-dev qtconnectivity5-dev qt5-qmake libqt5gui5 libqt5widgets5
         mkdir build-desktop && cd build-desktop
         qmake ..
         make -j$(nproc)
