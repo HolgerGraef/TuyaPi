@@ -14,6 +14,8 @@
 MainWidget::MainWidget(bool isDesktop, QWidget* parent)
   : QLabel(parent)
 {
+  auto iconOptions = QVariantMap{ { "color", QColor(Qt::lightGray) } };
+
   if (!isDesktop) {
     setGeometry(0, 0, 1920, 1080);
     setStyleSheet("QWidget { font-size: 42pt; }");
@@ -21,12 +23,9 @@ MainWidget::MainWidget(bool isDesktop, QWidget* parent)
     setPixmap(
       QPixmap("background.png").scaled(size(), Qt::KeepAspectRatioByExpanding));
 
-    auto pm =
-      awesome()->icon(fa::mdi6, fa::mdi6_circle_slice_8).pixmap(150, 150);
-    QPixmap pmMasked(pm.size());
-    pmMasked.fill(Qt::lightGray);
-    pmMasked.setMask(pm.createMaskFromColor(Qt::transparent));
-    mCursor = QCursor(pmMasked, -1, -1);
+    auto icon = awesome()->icon(fa::mdi6, fa::mdi6_circle_slice_8, iconOptions);
+    auto pm = icon.pixmap(150, 150);
+    mCursor = QCursor(pm, -1, -1);
     setCursor(mCursor);
 
     connect(&mMouseHideTimer, SIGNAL(timeout()), this, SLOT(hideMouse()));
@@ -36,6 +35,7 @@ MainWidget::MainWidget(bool isDesktop, QWidget* parent)
     mLockScreen = new LockScreen(this, mBluetoothManager, mWifiManager);
   } else {
     setGeometry(0, 0, 800, 600);
+    auto icon = awesome()->icon(fa::mdi6, fa::mdi6_home, iconOptions);
 
     mQuitAction = new QAction(tr("&Quit"), this);
     connect(mQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
@@ -46,13 +46,8 @@ MainWidget::MainWidget(bool isDesktop, QWidget* parent)
     mTrayIcon = new QSystemTrayIcon(this);
     mTrayIcon->setContextMenu(mTrayIconMenu);
 
-    auto pm = awesome()->icon(fa::mdi6, fa::mdi6_home).pixmap(150, 150);
-    QPixmap pmMasked(pm.size());
-    pmMasked.fill(Qt::lightGray);
-    pmMasked.setMask(pm.createMaskFromColor(Qt::transparent));
-
-    mTrayIcon->setIcon(pmMasked);
-    setWindowIcon(pmMasked);
+    mTrayIcon->setIcon(icon);
+    setWindowIcon(icon);
 
     mTrayIcon->show();
   }
