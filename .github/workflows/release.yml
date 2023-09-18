@@ -28,14 +28,25 @@ jobs:
         make install
 
     - uses: ammaraskar/gcc-problem-matcher@master
-    - name: Build
+    - name: Build (qtxrpi)
       run: |
-        mkdir build && cd build
+        mkdir build-qtxrpi && cd build-qtxrpi
         /opt/qtxrpi/qt5.15/bin/qmake ..
         make -j$(nproc)
+        mv build-qtxrpi/TuyaPi TuyaPi-rpi4
+
+    - name: Build (desktop)
+      run: |
+        sudo apt-get install -y qtbase5-dev qtconnectivity5-dev qt5-qmake libqt5gui5 libqt5widgets5
+        mkdir build-desktop && cd build-desktop
+        qmake ..
+        make -j$(nproc)
+        mv build-desktop/TuyaPi TuyaPi-desktop
 
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: build/TuyaPi
+        files: |
+          TuyaPi-rpi4
+          TuyaPi-desktop
